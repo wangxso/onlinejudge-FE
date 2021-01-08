@@ -51,7 +51,7 @@
           <a-icon type="dashboard" />
           状态
         </a-menu-item>
-        <a-menu-item key="race" v-on:click="changePages">
+        <a-menu-item key="contest" v-on:click="changePages">
           <a-icon type="trophy" />
           比赛
         </a-menu-item>

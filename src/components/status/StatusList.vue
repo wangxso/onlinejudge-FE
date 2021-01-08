@@ -105,13 +105,45 @@ const data = [
     author: 'mjj',
     submit: '2021-1-8 15:43:56'
   },
+  {
+    id: '4d25d4b9bc54d',
+    status: 'Compiled Error',
+    problem: 34,
+    time: -1,
+    memory: -1,
+    language: 'PHP',
+    author: 'yjm',
+    submit: '2021-1-8 15:43:53'
+  },
+  {
+    id: '5d25d4b9bc54d',
+    status: 'Time Limit Exceeded',
+    problem: 824,
+    time: 2022,
+    memory: 20000000,
+    language: 'PHP',
+    author: 'xiaodaoshi',
+    submit: '2021-1-8 15:43:53'
+  },
+  {
+    id: '5d25d4b9bc54d',
+    status: 'Memory Limit Exceeded',
+    problem: 824,
+    time: 1100,
+    memory: 3020000000,
+    language: 'PHP',
+    author: 'xiaodaoshi',
+    submit: '2021-1-8 15:43:53'
+  }
 ];
 
 const answer_status = {
   'Accept': '#87d068',
-  'Wrong Answer': '#f50',
-  'Runtime Error': '#ff0000',
-  'Compile Error': 'pink'
+  'Wrong Answer': '#ff0000',
+  'Runtime Error': '#f50',
+  'Compiled Error': 'pink',
+  'Time Limit Exceeded': '#ff0000',
+  'Memory Limit Exceeded': '#ff0000',
 }
 export default {
   data() {
