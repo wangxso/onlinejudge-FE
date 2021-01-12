@@ -14,6 +14,16 @@ const routers = [
                 path: 'problems',
                 name: 'problems',
                 component: () => import("@/pages/front/problems")
+            },
+            {
+                path: 'status',
+                name: 'status',
+                component: () => import('@/pages/front/status')
+            },
+            {
+                path: 'contest',
+                name: 'contest',
+                component: () => import('@/pages/front/contest')
             }
         ]
     }

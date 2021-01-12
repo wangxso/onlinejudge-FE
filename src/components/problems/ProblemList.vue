@@ -1,6 +1,6 @@
 <template>
   <a-table :columns="columns" :data-source="data">
-    <span  slot="name" slot-scope="text">{{ text }}</span>
+    <a  slot="name" slot-scope="text">{{ text }}</a>
     <span slot="tags" slot-scope="tags">
       <a-tag
           v-for="tag in tags"
@@ -21,7 +21,7 @@ const columns = [
     scopedSlots: { customRender: 'pid' }
   },
   {
-    title: 'Name',
+    title: 'Title',
     dataIndex: 'name',
     key: 'name',
     scopedSlots: { customRender: 'name' },
