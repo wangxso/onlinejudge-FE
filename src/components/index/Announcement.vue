@@ -7,7 +7,7 @@
           <a-list-item-meta
               :description = item.des
           >
-            <a slot="title" href="https://www.antdv.com/">{{ item.title }}</a>
+            <a slot="title" href="announce?id=123">{{ item.title }}</a>
           </a-list-item-meta>
         </a-list-item>
       </a-list>

@@ -24,6 +24,11 @@ const routers = [
                 path: 'contest',
                 name: 'contest',
                 component: () => import('@/pages/front/contest')
+            },
+            {
+                path: 'announce',
+                name: 'announce',
+                component: () => import('@/pages/front/announce')
             }
         ]
     }
