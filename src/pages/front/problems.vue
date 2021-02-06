@@ -1,17 +1,21 @@
 <template>
   <div>
-    <a-card title="问题" :bordered="false">
-      <ProblemList></ProblemList>
-    </a-card>
+    <router-view></router-view>
   </div>
 </template>
 
 <script>
-import ProblemList from "@/components/problems/ProblemList";
 export default {
   name: "Problems",
   components:{
-    ProblemList
+  },
+  data() {
+    return {
+
+    }
+  },
+  methods: {
+
   }
 }
 </script>

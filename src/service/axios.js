@@ -20,7 +20,7 @@ export function requestUrl (method, url, data) {
 // 封装一个restful风格的axios(以json形式传输数据)
 export function requestJson (method, url, data) {
     return new Promise((resolve, reject) => {
-        axios[method](url, data.data, {headers: {'Content-Type': 'application/json'}})
+        axios[method](url, data, {headers: {'Content-Type': 'application/json'}})
             .then(res => {
                 resolve(res.data)
             }, error => {

@@ -13,7 +13,20 @@ const routers = [
             {
                 path: 'problems',
                 name: 'problems',
-                component: () => import("@/pages/front/problems")
+                component: () => import("@/pages/front/problems"),
+                children: [
+                    {
+                        path: "",
+                        name: "problemList",
+                        component: () => import("@/components/problems/ProblemList")
+                    },
+                    {
+                        path: ":pid",
+                        name: "problemsDetail",
+                        props: true,
+                        component: () => import("@/components/problems/ProblemDetail"),
+                    }
+                ]
             },
             {
                 path: 'status',
@@ -29,7 +42,42 @@ const routers = [
                 path: 'announce',
                 name: 'announce',
                 component: () => import('@/pages/front/announce')
-            }
+            },
+        ]
+    },
+    {
+        path: '/admin',
+        name: 'admin',
+        component: () => import('@/pages/backend/App'),
+        children: [
+            {
+                path: "",
+                name: "index",
+                component: () => import("@/pages/backend/index")
+            },
+            {
+                path: "user",
+                name: "user",
+                component: () => import("@/pages/backend/user")
+            },
+            {
+                path: "problem",
+                name: "problem",
+                component: () => import("@/pages/backend/problem"),
+                children: [
+                    {
+                        path: "",
+                        name: "",
+                        component: () => import("@/components/problems/AdminProblemList"),
+                    },
+                    {
+                        path: "edit",
+                        name: "edit",
+                        component: () => import("@/components/problems/AdminProblemEdit"),
+                        props: true
+                    }
+                ]
+            },
         ]
     }
 ]

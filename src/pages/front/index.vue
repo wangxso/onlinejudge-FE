@@ -1,6 +1,19 @@
 <template>
   <div>
-    <Content id="index-content" />
+    <a-row>
+      <a-col :span="20">
+        <Content id="index-content" />
+      </a-col>
+      <a-col :span="1"></a-col>
+      <a-col :span="3">
+        <div>
+          <a-card title="统计数据">
+            <a-statistic title="全站用户数" :value="112893" style="margin-right: 50px" />
+            <a-statistic title="全站提交数"  :value="112893" />
+          </a-card>
+        </div>
+      </a-col>
+    </a-row>
     <Announcement :announceList="announceList" id="announce"></Announcement>
   </div>
 </template>
@@ -12,7 +25,9 @@ export default {
   name: "index",
   data() {
     return {
-      announceList: {}
+      announceList: {},
+      visible: false,
+      loading: false
     }
   },
   components: {

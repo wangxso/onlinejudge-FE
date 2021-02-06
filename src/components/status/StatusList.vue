@@ -1,20 +1,23 @@
 <template>
   <a-card title="状态">
-    <a-table :columns="columns" :data-source="data">
+    <a-table :columns="columns" :data-source="submissionList">
       <a class="link-text" slot="id" slot-scope="id">{{id}}</a>
-      <span slot="status" slot-scope="status">
-         <a-tag :color="colors[status]">{{status}}</a-tag>
+      <span slot="result" slot-scope="result">
+         <a-tag :color="colors[result]">{{resultText[result]}}</a-tag>
       </span>
-      <a class="link-text" slot="problem" slot-scope="problem">{{problem}}</a>
-      <span slot="time" slot-scope="time">
-        <p v-if="time>=0">{{time}} ms</p>
-        <p v-if="time<0">-</p>
+      <a class="link-text" :href="'problems/'+pid" slot="pid" slot-scope="pid">{{pid}}</a>
+      <span slot="timeCost" slot-scope="timeCost">
+        <p v-if="timeCost>=0">{{timeCost}} ms</p>
+        <p v-if="timeCost<0">-</p>
       </span>
-      <span slot="memory" slot-scope="memory">
-        <p v-if="memory>=0">{{Math.ceil(memory/8/1024/1024)}} MB</p>
-        <p v-if="memory<0">-</p>
+      <span slot="memoryCost" slot-scope="memoryCost">
+        <p v-if="memoryCost>=0">{{Math.ceil(memoryCost/8/1024/1024)}} MB</p>
+        <p v-if="memoryCost<0">-</p>
       </span>
-      <a class="link-text" slot="author" slot-scope="author">{{author}}</a>
+      <a class="link-text" slot="user" slot-scope="user">{{user.username}}</a>
+      <template slot="createTime" slot-scope="createTime">
+        {{createTime | formatDate}}
+      </template>
     </a-table>
   </a-card>
 </template>
@@ -29,30 +32,30 @@ const columns = [
   },
   {
     title: 'Status',
-    dataIndex: 'status',
-    key: 'status',
-    scopedSlots: { customRender: 'status'},
+    dataIndex: 'result',
+    key: 'result',
+    scopedSlots: { customRender: 'result'},
     width: 200
   },
   {
     title: 'Problem',
-    dataIndex: 'problem',
-    key: 'problem',
-    scopedSlots: {customRender: 'problem'},
+    dataIndex: 'pid',
+    key: 'pid',
+    scopedSlots: {customRender: 'pid'},
     width: 200
   },
   {
     title: 'Time',
-    key: 'time',
-    dataIndex: 'time',
-    scopedSlots: { customRender: 'time' },
+    key: 'timeCost',
+    dataIndex: 'timeCost',
+    scopedSlots: { customRender: 'timeCost' },
     width: 200
   },
   {
     title: 'Memory',
-    key: 'memory',
-    dataIndex: 'memory',
-    scopedSlots: { customRender: 'memory' },
+    key: 'memoryCost',
+    dataIndex: 'memoryCost',
+    scopedSlots: { customRender: 'memoryCost' },
     width: 200
   },
   {
@@ -63,96 +66,61 @@ const columns = [
   },
   {
     title: 'Author',
-    key: 'author',
-    dataIndex: 'author',
-    scopedSlots: {customRender: 'author'}
+    key: 'user',
+    dataIndex: 'user',
+    scopedSlots: {customRender: 'user'}
   },
   {
     title: 'Submit',
-    key: 'submit',
-    dataIndex: 'submit'
+    key: 'createTime',
+    dataIndex: 'createTime',
+    scopedSlots: {customRender: 'createTime'}
   }
-];
 
-const data = [
-  {
-    id: '1d25d4b9bc54d',
-    status: 'Accept',
-    problem: 32,
-    time: 63,
-    memory: 10020,
-    language: 'Python',
-    author: 'wangx',
-    submit: '2021-1-8 16:08:26'
-  },
-  {
-    id: '2d25d4b9bc54d',
-    status: 'Wrong Answer',
-    problem: 42,
-    time: 7,
-    memory: 33333,
-    language: 'C++',
-    author: 'zimo',
-    submit: '2021-1-8 16:05:30'
-  },
-  {
-    id: '3d25d4b9bc54d',
-    status: 'Runtime Error',
-    problem: 33,
-    time: -1,
-    memory: -1,
-    language: 'Java',
-    author: 'mjj',
-    submit: '2021-1-8 15:43:56'
-  },
-  {
-    id: '4d25d4b9bc54d',
-    status: 'Compiled Error',
-    problem: 34,
-    time: -1,
-    memory: -1,
-    language: 'PHP',
-    author: 'yjm',
-    submit: '2021-1-8 15:43:53'
-  },
-  {
-    id: '5d25d4b9bc54d',
-    status: 'Time Limit Exceeded',
-    problem: 824,
-    time: 2022,
-    memory: 20000000,
-    language: 'PHP',
-    author: 'xiaodaoshi',
-    submit: '2021-1-8 15:43:53'
-  },
-  {
-    id: '5d25d4b9bc54d',
-    status: 'Memory Limit Exceeded',
-    problem: 824,
-    time: 1100,
-    memory: 3020000000,
-    language: 'PHP',
-    author: 'xiaodaoshi',
-    submit: '2021-1-8 15:43:53'
-  }
 ];
 
 const answer_status = {
-  'Accept': '#87d068',
-  'Wrong Answer': '#ff0000',
-  'Runtime Error': '#f50',
-  'Compiled Error': 'pink',
-  'Time Limit Exceeded': '#ff0000',
-  'Memory Limit Exceeded': '#ff0000',
-}
+  '1': '#87d068',
+  '-1': '#ff0000',
+  '2': '#f50',
+  '3': 'pink',
+  '4': '#ff0000',
+  '5': '#ff0000',
+};
+
+const result_text = {
+  "1": "Accepted",
+  "-1": "Wrong Answer",
+  "2": "Runtime Error",
+  "3": "Compiled Error",
+  "4": "Time Limit Exceeded",
+  "5": "Memory Limit Exceeded",
+};
 export default {
   data() {
     return {
-      data,
       columns,
       colors: answer_status,
+      index: 1,
+      pageSize: 10,
+      submissionList: {},
+      resultText: result_text
     };
   },
+  methods: {
+    getSubmissions(){
+      this.$api.submission.findAllPagination(this.index, this.pageSize).then(res => {
+            if (res.code === 0) {
+              this.submissionList = res.data;
+            } else {
+              this.$message.error(res.msg)
+            }
+      })
+    },
+  },
+  mounted() {
+    this.getSubmissions()
+  }
 };
 </script>
 

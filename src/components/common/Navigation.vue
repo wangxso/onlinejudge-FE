@@ -1,35 +1,38 @@
 <template>
   <div id="navigation-index">
-      <!-- 导航栏logo start -->
+    <a-affix :offset-top="top">
+    <!-- 导航栏logo start -->
       <div class="logo">
         <p>SOJ</p>
       </div>
       <!-- 导航栏logo end -->
       <!-- 头像 start -->
       <div class="avatar">
-        <a-avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />
-        <!-- 用户名 下拉栏 start -->
-        <a-space :size="size">
-        <a-dropdown placement="bottomCenter" >
-          <a class="ant-dropdown-link username" @click="e => e.preventDefault()">
-            wangx/用户名 <a-icon type="down" />
-          </a>
-          <a-menu slot="overlay" @click="onClick">
-            <a-menu-item key="1">
-              个人中心
-            </a-menu-item>
-            <a-menu-item key="2">
-              后台管理
-            </a-menu-item>
-            <a-menu-item key="3">
-              退出登录
-            </a-menu-item>
-          </a-menu>
-        </a-dropdown>
-        <a-switch  :default-checked="false" @change="changeTheme" /> 切换配色
-          <p style="padding-right: 10px"></p>
-        <!-- 用户名 下拉栏 end -->
-        </a-space>
+        <Login v-if="!user" :loading="loading" :visible="visible"></Login>
+        <div class="logined"  v-if="user">
+          <a-avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />
+          <!-- 用户名 下拉栏 start -->
+          <a-space :size="size">
+            <a-dropdown placement="bottomCenter" >
+              <a class="ant-dropdown-link username" @click="e => e.preventDefault()">
+                {{user.username}} <a-icon type="down" />
+              </a>
+              <a-menu slot="overlay" @click="onClick">
+                <a-menu-item key="1">
+                  个人中心
+                </a-menu-item>
+                <a-menu-item @click="toLink('admin')">
+                  后台管理
+                </a-menu-item>
+                <a-menu-item @click="logout" key="3">
+                  退出登录
+                </a-menu-item>
+              </a-menu>
+            </a-dropdown>
+            <p style="padding-right: 10px"></p>
+            <!-- 用户名 下拉栏 end -->
+          </a-space>
+        </div>
       </div>
       <!-- 头像 end -->
       <!-- 导航 按钮 start -->
@@ -64,16 +67,26 @@
           关于
         </a-menu-item>
       </a-menu>
+    </a-affix>
   </div>
 </template>
 
 <script>
+import Login from "@/components/common/Login";
+import {RECORD_USER, RECORD_TOKEN} from "@/store/mutation-types";
 
 export default {
+  inject:['reload'],
+  components: {
+    Login
+  },
   data() {
     return {
       theme: 'light',
       size: 10,
+      visible: false,
+      loading: false,
+      user: this.$store.state.user
     }
   },
   methods: {
@@ -85,6 +98,21 @@ export default {
     },
     changePages(obj) {
       this.$router.push(obj.key)
+    },
+    logout(){
+      this.$api.user.logout(this.$store.state.user).then(res => {
+          if (res.code === 0) {
+              this.$store.commit(RECORD_USER, null);
+              this.$store.commit(RECORD_TOKEN, null);
+              this.$message.success("登出成功");
+              this.reload();
+          } else {
+            this.$message.error(res.msg);
+          }
+      })
+    },
+    toLink(url){
+      this.$router.push(url)
     }
   },
 };
