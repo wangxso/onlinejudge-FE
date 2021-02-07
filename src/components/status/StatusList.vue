@@ -1,18 +1,21 @@
 <template>
   <a-card title="状态">
-    <a-table :columns="columns" :data-source="submissionList">
-      <a class="link-text" slot="id" slot-scope="id">{{id}}</a>
+    <a-table :loading="loading" :columns="columns" :data-source="submissionList" :pagination="pagination" @change="handleTableChange">
+      <a class="link-text" slot="sid" slot-scope="sid">{{sid}}</a>
       <span slot="result" slot-scope="result">
          <a-tag :color="colors[result]">{{resultText[result]}}</a-tag>
       </span>
       <a class="link-text" :href="'problems/'+pid" slot="pid" slot-scope="pid">{{pid}}</a>
       <span slot="timeCost" slot-scope="timeCost">
         <p v-if="timeCost>=0">{{timeCost}} ms</p>
-        <p v-if="timeCost<0">-</p>
+        <p v-else>-</p>
       </span>
       <span slot="memoryCost" slot-scope="memoryCost">
         <p v-if="memoryCost>=0">{{Math.ceil(memoryCost/8/1024/1024)}} MB</p>
-        <p v-if="memoryCost<0">-</p>
+        <p v-else>-</p>
+      </span>
+      <span slot="language" slot-scope="language">
+        {{language2Str[language]}}
       </span>
       <a class="link-text" slot="user" slot-scope="user">{{user.username}}</a>
       <template slot="createTime" slot-scope="createTime">
@@ -22,12 +25,13 @@
   </a-card>
 </template>
 <script>
+
 const columns = [
   {
-    title: 'id',
-    dataIndex: 'id',
-    key: 'id',
-    scopedSlots: {customRender: 'id'},
+    title: 'sid',
+    dataIndex: 'sid',
+    key: 'sid',
+    scopedSlots: {customRender: 'sid'},
     width: 200
   },
   {
@@ -62,7 +66,7 @@ const columns = [
     title: 'Language',
     key: 'language',
     dataIndex: 'language',
-
+    scopedSlots: {customRender: "language"}
   },
   {
     title: 'Author',
@@ -80,23 +84,37 @@ const columns = [
 ];
 
 const answer_status = {
+  "-1": "blue",
   '1': '#87d068',
-  '-1': '#ff0000',
-  '2': '#f50',
-  '3': 'pink',
-  '4': '#ff0000',
+  '2': '#ff0000',
+  '3': '#f50',
+  '4': 'pink',
   '5': '#ff0000',
+  '6': '#ff0000',
+  '7': "#f50",
+  "8": "#f50",
+  "9": "#f50"
 };
 
 const result_text = {
+  "-1": "Pending",
   "1": "Accepted",
-  "-1": "Wrong Answer",
-  "2": "Runtime Error",
-  "3": "Compiled Error",
-  "4": "Time Limit Exceeded",
+  "2": "Wrong Answer",
+  "3": "Runtime Error",
+  "4": "Output Limit Exceeded",
   "5": "Memory Limit Exceeded",
+  "6": "Time Limit Exceeded",
+  "7": "Presentation Error",
+  "8": "System Error",
+  "9": "Compile Error",
 };
+const language2Str = {
+  "0": "C",
+  "1": "C++",
+  "2": "Java"
+}
 export default {
+  inject: ['reload'],
   data() {
     return {
       columns,
@@ -104,22 +122,42 @@ export default {
       index: 1,
       pageSize: 10,
       submissionList: {},
-      resultText: result_text
+      resultText: result_text,
+      pagination:{
+        current: 1,
+        pageSize: 10,
+        pageSizeOptions: ['10', '20', '30'],
+        showTotal: (total, range) => {
+          return range[0] + '-' +range[1] + '共' + total + '条';
+        },
+        showQuickJumper: true,
+        showSizeChanger: true,
+        total: 0,
+      },
+      loading: true,
+      language2Str,
     };
   },
   methods: {
-    getSubmissions(){
-      this.$api.submission.findAllPagination(this.index, this.pageSize).then(res => {
+    getSubmissions(page , pageSize){
+      this.$api.submission.findAllPagination(page, pageSize).then(res => {
             if (res.code === 0) {
-              this.submissionList = res.data;
+              this.loading = false
+              this.submissionList = res.data.records;
+              this.pagination.total = res.data.total
             } else {
               this.$message.error(res.msg)
             }
       })
     },
+    handleTableChange(pagination) {
+      this.pagination.current = pagination.current
+      this.pagination.pageSize = pagination.pageSize
+      this.getSubmissions(pagination.current, pagination.pageSize)
+    },
   },
   mounted() {
-    this.getSubmissions()
+    this.getSubmissions(this.index, this.pageSize)
   }
 };
 </script>

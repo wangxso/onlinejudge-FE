@@ -65,7 +65,7 @@
             handleTableChange(pagination) {
                 this.pagination.current = pagination.current
                 this.pagination.pageSize = pagination.pageSize
-
+                this.findProblemPagination(this.current, this.pageSize)
             },
             findProblemPagination(page, pageSize) {
                 this.loading = true;

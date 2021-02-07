@@ -34,14 +34,14 @@
                 <a-card class="input-box" bordered="false">
                     <div class="select-lang">
                         <span>语言:</span>
-                        <a-select default-value="0" style="width: 120px" @change="handleChange">
-                            <a-select-option value="0">
+                        <a-select default-value="0" v-model="type" style="width: 120px" @change="handleChange">
+                            <a-select-option :value="0">
                                 C
                             </a-select-option>
-                            <a-select-option value="1">
+                            <a-select-option :value="1">
                                 C++
                             </a-select-option>
-                            <a-select-option value="2">
+                            <a-select-option :value="2">
                                 Java
                             </a-select-option>
                         </a-select>
@@ -99,6 +99,7 @@
         },
         data(){
             return{
+                type: 0,
                 problem: {},
                 code: '', // 编辑器绑定的值
                 // 默认配置
@@ -120,7 +121,8 @@
             getProblem(){
                 this.$api.problem.findProblemByPid(this.pid).then(res => {
                     if (res.code === 0) {
-                        this.problem = res.data;
+                        this.problem = res.data.problem;
+                        this.problem.user = res.data.user
                         const samples = this.problem.samples;
                         this.problem.samples = JSON.parse(samples)
                     } else {
@@ -132,30 +134,33 @@
                 if (value === 0 || value === 1) this.options.mode = "text/x-c++src"
                 else if (value === 2) this.options.mode = "text/x-java"
             },
-            enterLoading() {
-                this.openNotification('bottomRight')
-                this.loading = true;
-            },
-            openNotification(placement) {
-                const key = 'updatable';
-                this.$notification.open({
-                    key,
-                    message: '提交成功',
-                    description: '提交成功,等待判题',
-                    placement,
-                    icon: <a-icon type="loading" style="color: #108ee9" />,
-                });
-                setTimeout(() => {
-                    this.$notification.open({
-                        key,
-                        message: 'Wrong Answer',
-                        description: '答案错误!',
-                        placement,
-                        icon: <a-icon type="close-circle" theme="twoTone" two-tone-color="#eb2f96"/>
-                        // icon: <a-icon type="check-circle" theme="twoTone" two-tone-color="#52c41a" />,
-                    });
-                }, 1000);
-            },
+          enterLoading: function () {
+            this.loading = true;
+
+            const submission = {
+              "code": this.code,
+              "type": this.type,
+              "uid": this.$store.state.user.uid,
+              "pid": this.problem.pid,
+              "language": this.type
+            }
+
+            if (this.code === "") {
+              this.$message.error("代码不能为空");
+              this.loading = false;
+              return;
+            }
+
+            this.$api.submission.submitAnswer(submission, this.problem.pid).then(res => {
+                  if (res.code === 0) {
+                    this.$message.success("提交成功")
+                    this.loading = false;
+                  } else {
+                    this.$message.error(res.msg)
+                    this.loading = false;
+                  }
+            })
+          }
         },
         mounted() {
             this.getProblem();

@@ -13,7 +13,7 @@
                 @click="handleClick"
         >
             <a-menu-item key="/admin">
-                <a-icon type="home" /><span>首页</span>
+                <a-icon type="home" /><span>仪表盘</span>
             </a-menu-item>
             <a-menu-item key="/admin/user">
                 <a-icon type="contacts" /><span>用户管理</span>
@@ -21,14 +21,17 @@
             <a-menu-item key="/admin/problem">
                 <a-icon type="file-text" /><span>题目管理</span>
             </a-menu-item>
-            <a-menu-item key="3">
+            <a-menu-item key="/admin/judger">
                 <a-icon type="cloud" /><span>判题机管理</span>
             </a-menu-item>
-            <a-menu-item key="4">
+            <a-menu-item key="/admin/content">
                 <a-icon type="bulb" /><span>比赛管理</span>
             </a-menu-item>
-            <a-menu-item key="5">
+            <a-menu-item key="/admin/website">
                 <a-icon type="info-circle" /><span>网站信息管理</span>
+            </a-menu-item>
+            <a-menu-item key="/">
+              <a-icon type="arrow-left" /><span>返回首页</span>
             </a-menu-item>
         </a-menu>
     </div>

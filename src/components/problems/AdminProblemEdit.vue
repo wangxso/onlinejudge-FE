@@ -49,7 +49,7 @@
                 <a-input  suffix="ms" v-model="problem.timeLimit" />
             </a-form-model-item>
             <a-form-model-item label="内存限制">
-                <a-input  suffix="b" v-model="problem.memoryLimit" />
+                <a-input  suffix="KB" v-model="problem.memoryLimit" />
             </a-form-model-item>
             <a-form-model-item label="提示">
                 <mavon-editor v-model="problem.hint"/>

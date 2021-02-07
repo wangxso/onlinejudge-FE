@@ -11,6 +11,7 @@ Vue.use(Vuex); // 显式调用vuex
 const state = {
     token: null, // 登录令牌,存在localStorage中，防止刷新页面丢失数据
     user: null, // 用户信息
+    code : null,
 };
 
 export default new Vuex.Store({

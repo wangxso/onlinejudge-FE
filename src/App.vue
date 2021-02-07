@@ -5,13 +5,26 @@
 </template>
 
 <script>
+const result_text = {
+  "-1": "Pending",
+  "1": "Accepted",
+  "2": "Wrong Answer",
+  "3": "Runtime Error",
+  "4": "Output Limit Exceeded",
+  "5": "Memory Limit Exceeded",
+  "6": "Time Limit Exceeded",
+  "7": "Presentation Error",
+  "8": "System Error",
+  "9": "Compile Error",
+};
 export default {
   name: 'App',
   components: {
   },
   provide () {    //父组件中通过provide来提供变量，在子组件中通过inject来注入变量。
     return {
-      reload: this.reload
+      reload: this.reload,
+      result_text,
     }
   }, data() {
     return{
@@ -24,7 +37,10 @@ export default {
       this.$nextTick(function () {
         this.isRouterAlive = true;         //再打开
       })
-    }
+    },
+  },
+  created() {
+    this.initWebSocket()
   }
 }
 </script>

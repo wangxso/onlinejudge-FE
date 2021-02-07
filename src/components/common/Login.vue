@@ -85,7 +85,7 @@
             this.loading=true;
             this.$refs.ruleForm.validate(valid => {
                 if (valid) {
-                    this.$api.user.login(this.form).then(res => {
+                    this.$api.user.login(this.form, this.form.code).then(res => {
                         if (res.code === 0) {
                             this.visible = false;
                             console.log(res.data)

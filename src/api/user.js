@@ -4,8 +4,8 @@ const user = {
     register(user) {
         return requestJson("post", "/user/register", user)
     },
-    login(user){
-        return requestJson("post", "/user/login", user)
+    login(user, code){
+        return requestJson("post", `/user/login?code=${code}`, user)
     },
     findUserById(uid){
         return  requestJson("post", "/user/findUserById", {"uid": uid})
