@@ -6,6 +6,9 @@ const submission = {
     },
     submitAnswer(submission, tid) {
         return requestJson("post", `/submission?tid=${tid}`, submission)
+    },
+    getCount(){
+        return requestJson("get", "/submission/count")
     }
 }
 

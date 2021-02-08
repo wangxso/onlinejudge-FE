@@ -21,6 +21,9 @@ const user = {
     },
     updateUser(user){
         return requestJson("put", "/user", user)
+    },
+    getCount(){
+        return requestJson("get", "/user/count")
     }
 }
 

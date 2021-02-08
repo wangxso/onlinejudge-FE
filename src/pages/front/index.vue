@@ -8,8 +8,8 @@
       <a-col :span="3">
         <div>
           <a-card title="统计数据">
-            <a-statistic title="全站用户数" :value="112893" style="margin-right: 50px" />
-            <a-statistic title="全站提交数"  :value="112893" />
+            <a-statistic title="全站用户数" :value="userCount" style="margin-right: 50px" />
+            <a-statistic title="全站提交数"  :value="submitCount" />
           </a-card>
         </div>
       </a-col>
@@ -27,7 +27,9 @@ export default {
     return {
       announceList: {},
       visible: false,
-      loading: false
+      loading: false,
+      userCount: 0,
+      submitCount: 0,
     }
   },
   components: {
@@ -44,10 +46,29 @@ export default {
           }
       })
     },
+    getUserCount(){
+      this.$api.user.getCount().then(res => {
+          if (res.code === 0) {
+            this.userCount = res.data
+          } else {
+            this.$message.error(res.msg)
+          }
+      })
+    },
+    getSubmissionCount(){
+      this.$api.submission.getCount().then(res => {
+        if (res.code === 0) {
+          this.submitCount = res.data
+        } else {
+          this.$message.error(res.msg)
+        }
+      })
+    }
   },
   mounted() {
-    let that = this;
-    that.getAnnounceList()
+    this.getAnnounceList();
+    this.getUserCount();
+    this.getSubmissionCount();
   },
 }
 </script>
