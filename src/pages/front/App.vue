@@ -17,7 +17,6 @@
 <script>
 import Navigation from "@/components/common/Navigation";
 import $ from 'jquery'
-
 export default {
   inject: ['result_text'],
   name: "App",
@@ -29,13 +28,13 @@ export default {
       queueReceiveSetting: { // 消息队列配置
         websocket: null,
         client: null,
-        wsuri: 'ws://localhost:8081/websocket/'+this.$store.state.user.uid
+        wsuri: 'ws://localhost:8081/ws/'+this.$store.state.user.uid
       }
     }
   },
   mounted() {
-    $('.main').height($(window).height() - 150)
-    this.initWebSocket()
+    $('.main').height($(window).height() - 150);
+    this.initWebSocket();
   },
   methods: {
     initWebSocket () {
@@ -50,7 +49,7 @@ export default {
       this.queueReceiveSetting.websocket.onmessage = res => {
         let data = res.data
         this.$message.info(data)
-        this.openNotificationWA('bottomRight', res.data)
+        this.openNotification('bottomRight', res.data)
       }
       this.queueReceiveSetting.websocket.onclose = res => {
         console.log('连接关闭' + res)
@@ -59,7 +58,7 @@ export default {
         console.log('连接出错' + res)
       }
     },
-    openNotificationWA(placement, res) {
+    openNotification(placement, res) {
       const message = this.result_text[res]
       if (res == 1) {
         this.$notification.open({

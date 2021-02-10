@@ -21,6 +21,9 @@
             <a-menu-item key="/admin/problem">
                 <a-icon type="file-text" /><span>题目管理</span>
             </a-menu-item>
+            <a-menu-item key="/admin/announce">
+                <a-icon type="file-text" /><span>公告管理</span>
+            </a-menu-item>
             <a-menu-item key="/admin/judger">
                 <a-icon type="cloud" /><span>判题机管理</span>
             </a-menu-item>

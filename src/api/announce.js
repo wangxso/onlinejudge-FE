@@ -5,6 +5,9 @@ const announce = {
     },
     findAnnounceByAid(aid) {
         return requestJson('post', '/announce/findByAid', {"aid": aid})
+    },
+    findAnnouncePagination(page, pageSize) {
+        return requestJson('get', `/announce/${page}/${pageSize}`)
     }
 }
 

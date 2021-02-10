@@ -36,14 +36,14 @@ axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
  */
 // instance.interceptors.request.use(
 //     config => {
-//         const token = store.state.token
+//         const token = this.$store.state.token
 //         if (token) {
 //             config.headers.Authorization = token
 //         }
 //         return config
 //     },
 //     error => Promise.error(error)
-// )
+// );
 
 // instance.interceptors.response.use(
 //     response => {

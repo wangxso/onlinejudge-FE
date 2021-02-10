@@ -83,6 +83,11 @@ const routers = [
                     }
                 ]
             },
+            {
+                path: "announce",
+                name: "announce",
+                component: () => import('@/pages/backend/announce')
+            }
         ]
     },
 ]
