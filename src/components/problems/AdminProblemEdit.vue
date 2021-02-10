@@ -22,7 +22,8 @@
 
             <a-form-model-item label="样例描述">
                 <a-input-group>
-                    <a-input v-model="problem.samples" />
+                  <a-textarea v-model="samples.input" :rows="4" placeholder="输入样例"/>
+                  <a-textarea v-model="samples.output" :rows="4" placeholder="输出样例"/>
                 </a-input-group>
             </a-form-model-item>
             <a-form-model-item label="语言">
@@ -78,7 +79,20 @@
         name: "AdminProblemEdit",
         data() {
             return{
-                problem: {},
+                problem: {
+                  pid: "",
+                  title: "",
+                  description: "",
+                  inputDescription: "",
+                  outputDescription: "",
+                  samples: "",
+                  languages: ["0"],
+                  level: 0,
+                  timeLimit: "",
+                  memoryLimit: "",
+                  hint: "",
+                  uid: this.$store.state.user.uid
+                },
                 labelCol: { span: 4 },
                 wrapperCol: { span: 14 },
                 form: {
@@ -89,9 +103,18 @@
                     type: [],
                     resource: '',
                     desc: '',
+
                 },
-                testcase: {},
+                testcase: {
+                  id: "",
+                  input: "",
+                  output: ""
+                },
                 mode: 1,
+                samples: {
+                  input: "",
+                  output: ""
+                }
             }
         },
         methods: {
@@ -104,6 +127,9 @@
 
             },
             update() {
+                const languages = this.problem.languages;
+                this.problem.samples = JSON.stringify(this.samples)
+                this.problem.languages = JSON.stringify(languages)
                 this.$api.problem.update(this.problem).then(res => {
                     if (res.code === 0) {
                         this.$message.success(res.data)
@@ -114,8 +140,12 @@
                 })
             },
             add() {
+                const languages = this.problem.languages;
+                this.problem.languages = JSON.stringify(languages)
                 this.$api.problem.add(this.problem).then(res => {
                     if (res.code === 0) {
+                        this.testcase.id = this.problem.pid
+                        this.addTestCase()
                         this.$message.success(res.data)
                         this.$router.push("/admin/problem")
                     } else {
@@ -131,15 +161,25 @@
                         this.$message.error(res.msg)
                     }
                 })
-            }
+            },
+          addTestCase(){
+              this.testcase.id = this.problem.pid
+              this.$api.testcase.add(this.testcase).then(res => {
+                  if (res.code !== 0) {
+                    this.$message.error(res.msg)
+                  }
+              })
+          }
         },
         mounted() {
-            this.problem = this.$attrs
-            if (this.problem == null) {
+            this.mode = this.$route.query.mode
+            if (this.mode == 2) {
                 this.mode = 2
             } else {
-                this.findTestcase(this.problem.pid);
-                this.mode = 1
+              this.problem = this.$attrs
+              this.samples = JSON.parse(this.problem.samples)
+              this.findTestcase(this.problem.pid);
+              this.mode = 1
             }
         }
     }

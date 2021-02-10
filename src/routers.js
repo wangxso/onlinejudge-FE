@@ -43,6 +43,11 @@ const routers = [
                 name: 'announce',
                 component: () => import('@/pages/front/announce')
             },
+            {
+                path: "personal",
+                name: "personal",
+                component: () => import("@/pages/front/personal")
+            }
         ]
     },
     {

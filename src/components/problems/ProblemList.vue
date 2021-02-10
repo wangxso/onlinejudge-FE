@@ -1,5 +1,5 @@
 <template>
-  <a-card title="问题" :bordered="false">
+  <a-card title="问题" :bordered="false" :pagination="pagination" @change="changePage">
     <a-table
             :data-source="problemList"
             :loading="loading"
@@ -36,6 +36,8 @@
   </a-card>
 </template>
 <script>
+import { Gauge } from '@antv/g2plot';
+
 export default {
   data() {
     return {
@@ -48,15 +50,45 @@ export default {
         }
       }),
       problemList: {},
-      loading: true
+      loading: true,
+      pagination:{
+        current: 1,
+        pageSize: 10,
+        pageSizeOptions: ['10', '20', '30'],
+        showTotal: (total, range) => {
+          return range[0] + '-' +range[1] + '共' + total + '条';
+        },
+        showQuickJumper: true,
+        showSizeChanger: true,
+        total: 0,
+      }
     };
   },
   methods: {
-    getAllProblem() {
-      this.$api.problem.findAllProblem().then(res => {
-        this.problemList = res.data
+    getAllProblemPagination(page, pageSize) {
+      this.$api.problem.findProblemPagination(page, pageSize).then(res => {
+        this.problemList = res.data.records
       })
       this.loading = false;
+    },
+    drawLiquid(data){
+      const gauge = new Gauge('container', {
+        percent: data,
+        range: {
+          color: '#5B8FF9',
+        },
+        statistic: {
+          content: {
+            formatter: ({ percent }) => `Rate: ${(percent * 100).toFixed(0)}%`,
+          },
+        },
+      });
+      gauge.render();
+    },
+    changePage(pagination) {
+      this.pagination.pageSize = pagination.pageSize
+      this.pagination.current = pagination.page
+      this.getAllProblemPagination(pagination.page, pagination.pageSize)
     }
   },
   filters: {
@@ -73,7 +105,8 @@ export default {
     },
   },
   mounted() {
-    this.getAllProblem()
+    this.getAllProblemPagination(this.pagination.current, this.pagination.pageSize)
+    this.drawLiquid(0.75)
   }
 
 };

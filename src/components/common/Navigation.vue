@@ -18,7 +18,7 @@
                 {{user.username}} <a-icon type="down" />
               </a>
               <a-menu slot="overlay" @click="onClick">
-                <a-menu-item key="1">
+                <a-menu-item @click="toLink('personal')">
                   个人中心
                 </a-menu-item>
                 <a-menu-item @click="toLink('admin')">
@@ -39,30 +39,30 @@
       <a-menu
           :theme="theme"
           mode="horizontal"
-          :default-selected-keys="['1']"
+          :default-selected-keys="['/']"
           :style="{ lineHeight: '64px' }"
       >
         <a-menu-item key="/" v-on:click="changePages">
           <a-icon type="bank" />
           首页
         </a-menu-item>
-        <a-menu-item key="problems" v-on:click="changePages">
+        <a-menu-item key="/problems" v-on:click="changePages">
           <a-icon type="appstore" />
           题目
         </a-menu-item>
-        <a-menu-item key="status" v-on:click="changePages">
+        <a-menu-item key="/status" v-on:click="changePages">
           <a-icon type="dashboard" />
           状态
         </a-menu-item>
-        <a-menu-item key="contest" v-on:click="changePages">
+        <a-menu-item key="/contest" v-on:click="changePages">
           <a-icon type="trophy" />
           比赛
         </a-menu-item>
-        <a-menu-item key="rank" v-on:click="changePages">
+        <a-menu-item key="/rank" v-on:click="changePages">
           <a-icon type="fund" />
           排名
         </a-menu-item>
-        <a-menu-item key="about" v-on:click="changePages">
+        <a-menu-item key="/about" v-on:click="changePages">
           <a-icon type="info-circle" />
           关于
         </a-menu-item>

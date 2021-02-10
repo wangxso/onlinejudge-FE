@@ -1,6 +1,6 @@
 <template>
     <div>
-        <a-button size="small" type="primary" @click="() => (this.$router.push('problem/edit'))">
+        <a-button size="small" type="primary" @click="() => (this.$router.push('problem/edit?mode=2'))">
             添加题目
         </a-button>
         <a-table
@@ -9,6 +9,11 @@
                 :data-source="problemList"
                 :pagination="pagination"
                 @change="handleTableChange">
+            <template slot="tags" slot-scope="tags">
+              <a-tag v-for="tag in JSON.parse(tags)" :key="tag" color="#2db7f5">
+                {{tag}}
+              </a-tag>
+            </template>
             <template slot="operation" slot-scope="text, record">
             <div class="editable-row-operations">
                 <a  @click="() => toEdit(record)">Edit</a>
@@ -80,7 +85,7 @@
                 })
             },
             toEdit(record){
-                this.$router.push({path: "problem/edit", name: "edit", params: record})
+                this.$router.push({path: "problem/edit", name: "edit", params: record, query: {"mode": 1}})
             }
         },
         mounted() {

@@ -50,7 +50,7 @@ export default {
       this.queueReceiveSetting.websocket.onmessage = res => {
         let data = res.data
         this.$message.info(data)
-        this.openNotificationWA('bottomRight', res.data.result)
+        this.openNotificationWA('bottomRight', res.data)
       }
       this.queueReceiveSetting.websocket.onclose = res => {
         console.log('连接关闭' + res)
@@ -60,21 +60,23 @@ export default {
       }
     },
     openNotificationWA(placement, res) {
-      const key = 'updatable';
-      var icon = {};
       const message = this.result_text[res]
-      if (res === 1) {
-         icon = "<a-icon type=\"check-circle\" theme=\"twoTone\" two-tone-color=\"#52c41a\" />"
-      } else {
-         icon = "<a-icon type=\"close-circle\" theme=\"twoTone\" two-tone-color=\"#eb2f96\"/>"
-      }
+      if (res == 1) {
         this.$notification.open({
-          key,
           message: message,
           description: message,
           placement,
-          icon: icon
-        });
+          icon: <a-icon type="check-circle" theme="twoTone" two-tone-color="#52c41a" />
+      });
+      } else {
+        this.$notification.open({
+            message: message,
+            descriptions: message,
+            placement,
+            icon: <a-icon type="close-circle" theme="twoTone" two-tone-color="#eb2f96"/>
+            }
+        )
+      }
     },
   }
 }

@@ -15,6 +15,9 @@ const problem = {
     },
     add(problem) {
         return requestJson("post", "/problem", problem)
+    },
+    getChartData(pid) {
+        return requestJson("get", `/problem/chart?pid=${pid}`)
     }
 }
 

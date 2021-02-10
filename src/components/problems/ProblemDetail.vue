@@ -1,7 +1,7 @@
 <template>
     <div>
         <a-row>
-            <a-col :span="20">
+            <a-col :span="19">
                 <a-card :bordered="false" class="desc-box">
                     <a-descriptions :title="problem.title" layout="vertical" bordered>
 
@@ -54,7 +54,7 @@
                 </a-card>
             </a-col>
             <a-col :span="1"></a-col>
-            <a-col :span="3">
+            <a-col :span="4">
                 <a-card :bordered="false" >
                     <template slot="title">
                         数据
@@ -70,6 +70,9 @@
                         <br/>
                         Level: {{problem.level | levelFilter}}
                     </span>
+                </a-card>
+                <a-card title="题目详情" class="pie">
+                  <ProblemSubPieChart :pid="pid"></ProblemSubPieChart>
                 </a-card>
             </a-col>
         </a-row>
@@ -90,12 +93,13 @@
     require("codemirror/mode/css/css.js")
     require("codemirror/mode/sql/sql.js")
     require("codemirror/mode/shell/shell.js")
-
+    import ProblemSubPieChart from "@/components/problems/ProblemSubPieChart";
     export default {
         name: "ProblemDetail",
         props:['pid'],
         components: {
-            codemirror
+            codemirror,
+            ProblemSubPieChart
         },
         data(){
             return{
@@ -150,7 +154,7 @@
               this.loading = false;
               return;
             }
-
+            this.openNotification('rightBottom')
             this.$api.submission.submitAnswer(submission, this.problem.pid).then(res => {
                   if (res.code === 0) {
                     this.$message.success("提交成功")
@@ -160,6 +164,16 @@
                     this.loading = false;
                   }
             })
+          },
+          openNotification(placement){
+              const message = "已提交，等待判题"
+              this.$notification.open({
+                key: 'updatable',
+                message: message,
+                description: message,
+                placement,
+                icon:     <a-icon type="sync" spin />
+              });
           }
         },
         mounted() {
@@ -187,5 +201,8 @@
     }
     .select-lang{
         margin-bottom: 20px;
+    }
+    .pie{
+      margin-top: 50px;
     }
 </style>
