@@ -1,15 +1,13 @@
 <template>
   <div class="out-wrapper">
-    <ContestList></ContestList>
+    <router-view />
   </div>
 </template>
 
 <script>
-import ContestList from "@/components/contest/ContestList";
 export default {
   name: "contest",
   components: {
-    ContestList
   }
 }
 </script>

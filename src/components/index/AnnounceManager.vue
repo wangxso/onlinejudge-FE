@@ -7,6 +7,7 @@
 <script>
 export default {
 name: "AnnounceManager",
+    components: {},
     data() {
         return {
             announceList: null
@@ -16,7 +17,7 @@ name: "AnnounceManager",
         findAnnouncePagination(page, pageSize) {
             this.$api.announce.findAnnouncePagination(page, pageSize).then(res => {
                 if (res.code === 0) {
-                    this.announceList = res.records
+                    this.announceList = res.data.records
                 } else {
                     this.$message.error(res.msg)
                 }

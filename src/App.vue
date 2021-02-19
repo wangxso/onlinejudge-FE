@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <router-view v-if="isRouterAlive"/>
+      <router-view v-if="isRouterAlive"/>
   </div>
 </template>
 
@@ -26,9 +26,11 @@ export default {
       reload: this.reload,
       result_text,
     }
-  }, data() {
+  },
+  data() {
     return{
-      isRouterAlive: true                    //控制视图是否显示的变量
+      isRouterAlive: true ,                   //控制视图是否显示的变量,
+      transitionName:"",
     }
   },
   methods: {
@@ -41,7 +43,7 @@ export default {
   },
   created() {
     this.initWebSocket()
-  }
+  },
 }
 </script>
 <style scoped>

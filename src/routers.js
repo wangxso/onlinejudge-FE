@@ -36,7 +36,20 @@ const routers = [
             {
                 path: 'contest',
                 name: 'contest',
-                component: () => import('@/pages/front/contest')
+                component: () => import('@/pages/front/contest'),
+                children: [
+                    {
+                        path: "",
+                        name: "contestList",
+                        component: () => import('@/components/contest/ContestList')
+                    },
+                    {
+                        path: "/detail",
+                        name: "contestDetail",
+                        component: () => import('@/components/contest/ContestDetail'),
+                        props: true
+                    }
+                ]
             },
             {
                 path: 'announce',
@@ -47,6 +60,23 @@ const routers = [
                 path: "personal",
                 name: "personal",
                 component: () => import("@/pages/front/personal")
+            },
+            {
+                path: "rank",
+                name: "rank",
+                component: () => import("@/pages/front/rank"),
+                children: [
+                    {
+                        path: "",
+                        name: "",
+                        component:() =>  import("@/components/rank/Rank")
+                    }
+                ]
+            },
+            {
+                path: "about",
+                name: "about",
+                component: () => import("@/pages/front/about")
             }
         ]
     },
@@ -91,4 +121,6 @@ const routers = [
         ]
     },
 ]
+
+
 export default routers

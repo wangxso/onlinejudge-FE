@@ -1,7 +1,7 @@
 <template>
     <div>
         <a-form-model :model="problem" :label-col="labelCol" :wrapper-col="wrapperCol">
-            <a-form-model-item label="题目ID">
+            <a-form-model-item v-if="mode==2" label="题目ID">
                 <a-input v-model="problem.pid" />
             </a-form-model-item>
             <a-form-model-item label="题目标题">
@@ -9,15 +9,15 @@
             </a-form-model-item>
             <a-form-model-item label="题目描述">
                 <div id="main">
-                    <mavon-editor v-model="problem.description"/>
+                    <mavon-editor @change="changeDesc" v-model="problem.description"/>
                 </div>
             </a-form-model-item >
             <a-form-model-item label="输入描述">
-                <mavon-editor v-model="problem.inputDescription" />
+                <mavon-editor @change="changeInput" v-model="problem.inputDescription" />
             </a-form-model-item>
 
             <a-form-model-item label="输出描述">
-                <mavon-editor v-model="problem.outputDescription"/>
+                <mavon-editor @change="changeOutput"/>
             </a-form-model-item>
 
             <a-form-model-item label="样例描述">
@@ -53,9 +53,29 @@
                 <a-input  suffix="KB" v-model="problem.memoryLimit" />
             </a-form-model-item>
             <a-form-model-item label="提示">
-                <mavon-editor v-model="problem.hint"/>
+                <mavon-editor @change="changeHint"/>
             </a-form-model-item>
-
+            <a-form-model-item label="标签">
+                <template v-for="tag in tags">
+                    <a-tag color="blue" :key="tag" :closable="true" @close="() => handleClose(tag)">
+                        {{ tag }}
+                    </a-tag>
+                </template>
+                <a-input
+                        v-if="inputVisible"
+                        ref="input"
+                        type="text"
+                        size="small"
+                        :style="{ width: '78px' }"
+                        :value="inputValue"
+                        @change="handleInputChange"
+                        @blur="handleInputConfirm"
+                        @keyup.enter="handleInputConfirm"
+                />
+                <a-tag  style="background: #fff; borderStyle: dashed;" @click="showInput">
+                    <a-icon type="plus" /> New Tag
+                </a-tag>
+            </a-form-model-item>
             <a-form-model-item label="输入数据">
                 <a-textarea v-model="testcase.input" :rows="6"/>
             </a-form-model-item>
@@ -114,7 +134,10 @@
                 samples: {
                   input: "",
                   output: ""
-                }
+                },
+                tags: ['null'],
+                inputVisible: false,
+                inputValue: '',
             }
         },
         methods: {
@@ -130,6 +153,7 @@
                 const languages = this.problem.languages;
                 this.problem.samples = JSON.stringify(this.samples)
                 this.problem.languages = JSON.stringify(languages)
+                this.problem.tags = JSON.stringify(this.tags)
                 this.$api.problem.update(this.problem).then(res => {
                     if (res.code === 0) {
                         this.$message.success(res.data)
@@ -142,6 +166,7 @@
             add() {
                 const languages = this.problem.languages;
                 this.problem.languages = JSON.stringify(languages)
+                this.problem.tags = JSON.stringify(this.tags)
                 this.$api.problem.add(this.problem).then(res => {
                     if (res.code === 0) {
                         this.testcase.id = this.problem.pid
@@ -169,7 +194,47 @@
                     this.$message.error(res.msg)
                   }
               })
-          }
+          },
+            handleClose(removedTag) {
+                const tags = this.tags.filter(tag => tag !== removedTag);
+                console.log(tags);
+                this.tags = tags;
+            },
+            showInput() {
+                this.inputVisible = true;
+                this.$nextTick(function() {
+                    this.$refs.input.focus();
+                });
+            },
+            handleInputChange(e) {
+                this.inputValue = e.target.value;
+            },
+            handleInputConfirm() {
+                const inputValue = this.inputValue;
+                let tags = this.tags;
+                if (inputValue && tags.indexOf(inputValue) === -1) {
+                    tags = [...tags, inputValue];
+                }
+                console.log(tags);
+                Object.assign(this, {
+                    tags,
+                    inputVisible: false,
+                    inputValue: '',
+                });
+            },
+            changeHint(value, render){
+                this.problem.hint = render
+            },
+            changeInput(value, render){
+                this.problem.inputDescription = render
+            },
+            changeOutput(value, render){
+                this.problem.outputDescription = render
+            },
+            changeDesc(value, render){
+                this.problem.description = render
+            }
+
         },
         mounted() {
             this.mode = this.$route.query.mode
@@ -178,6 +243,7 @@
             } else {
               this.problem = this.$attrs
               this.samples = JSON.parse(this.problem.samples)
+              this.tags = JSON.parse(this.problem.tags)
               this.findTestcase(this.problem.pid);
               this.mode = 1
             }

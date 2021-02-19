@@ -3,6 +3,10 @@
         <a-button  type="primary" style="margin-right: 20px;" @click="showModal">
             Login
         </a-button>
+        <a-button type="primary" style="margin-right: 20px" @click="showRegister">
+            Register
+        </a-button>
+
         <a-modal v-model="visible" title="登录" on-ok="handleOk">
             <template slot="footer">
                 <a-button type="primary" @click="handleOk">
@@ -45,14 +49,21 @@
                 忘记密码
             </a-button>
         </a-modal>
+
+        <!--注册-->
+            <Register :registerVisible="registerVisible"></Register>
     </div>
 </template>
 <script>
     import {RECORD_USER, RECORD_TOKEN} from "@/store/mutation-types";
     import baseURL from "../../service/base-url";
+    import Register from "./Register";
     export default {
     inject:['reload'],
-    props: ['loading', 'visible'],
+    props: ['loading', 'visible', 'registerVisible'],
+    components: {
+      Register
+    },
     data() {
         return {
             labelCol: { span: 4 },
@@ -80,6 +91,9 @@
     methods: {
         showModal() {
             this.visible = true;
+        },
+        showRegister(){
+            this.registerVisible = true;
         },
         handleOk() {
             this.loading=true;

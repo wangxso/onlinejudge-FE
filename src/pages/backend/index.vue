@@ -7,7 +7,6 @@
                     <a-card title="用户信息" style="width: 300px">
                         <a-avatar>{{user.username[0]}}</a-avatar>
                         <span class="username">{{user.username}}</span>
-
                     </a-card>
                 </a-col>
             </a-row>

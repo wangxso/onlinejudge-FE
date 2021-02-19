@@ -3,11 +3,23 @@
         <a-button size="small" type="primary" @click="() => (this.visible2 = true)">
             添加用户
         </a-button>
+        <a-popconfirm
+                title="您确定要删除这些用户？"
+                ok-text="Yes"
+                cancel-text="No"
+                @confirm="deleteUsers()"
+        >
+            <a-button size="small" type="danger" style="margin-left: 30px">
+                删除所选用户
+            </a-button>
+        </a-popconfirm>
+
         <a-table
                 :loading="loading"
                 :columns="columns"
                 :data-source="userList"
                 :pagination="ipagination"
+                :row-selection="rowSelection"
                 @change="handleTableChange">
 
             <span slot="authority" slot-scope="authority">
@@ -196,6 +208,7 @@
                     showSizeChanger: true,
                     total: 0
                 },
+                selected: []
             };
         },
         methods: {
@@ -246,11 +259,35 @@
                         this.$message.error(res.msg);
                     }
                 })
+            },
+            deleteUsers(){
+                if (this.selected.length == 0) {
+                    this.$message.error("未选择用户")
+                    return;
+                }
+                this.$api.user.delete(this.selected).then(res => {
+                    if (res.code === 0) {
+                        this.$message.success(res.data)
+                        this.reload()
+                    } else {
+                        this.$message.error(res.msg)
+                    }
+                })
             }
         },
         mounted() {
             this.getUserPagination(this.defaultCurrent, this.defaultPageSize)
-        }
+        },
+        computed: {
+            rowSelection() {
+                return {
+                    onChange: (selectedRowKeys, selectedRows) => {
+                        this.selected = selectedRows;
+                        console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
+                    },
+                };
+            },
+        },
     };
 </script>
 <style scoped>

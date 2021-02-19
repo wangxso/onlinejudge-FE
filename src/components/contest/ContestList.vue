@@ -1,88 +1,69 @@
 <template>
-  <a-card title="Contest">
-    <a-table :columns="columns" :data-source="data">
-      <a slot="name" slot-scope="text">{{ text }}</a>
-      <span slot="customTitle"><a-icon type="smile-o" /> Name</span>
-      <span slot="tags" slot-scope="tags">
-      <a-tag
-          v-for="tag in tags"
-          :key="tag"
-          :color="tag === 'loser' ? 'volcano' : tag.length > 5 ? 'geekblue' : 'green'"
+  <div>
+    <a-card title="Contest">
+      <a-table
+              :data-source="data"
+              :customRow="rowClick"
+              rowKey="cid"
+              :loading="loading"
       >
-        {{ tag.toUpperCase() }}
-      </a-tag>
-    </span>
-      <span slot="action" slot-scope="text, record">
-      <a>Invite 一 {{ record.name }}</a>
-      <a-divider type="vertical" />
-      <a>Delete</a>
-      <a-divider type="vertical" />
-      <a class="ant-dropdown-link"> More actions <a-icon type="down" /> </a>
-    </span>
-    </a-table>
-  </a-card>
+        <a-table-column key="cid" title="Cid" data-index="cid" />
+        <a-table-column key="title" title="Title" data-index="title" />
+        <a-table-column key="startDate" title="Start" data-index="startDate">
+          <template slot-scope="startDate">
+            {{startDate | formatDate}}
+          </template>
+        </a-table-column>
+        <a-table-column key="endDate" title="End" data-index="endDate">
+          <template slot-scope="endDate">
+            {{endDate | formatDate}}
+          </template>
+        </a-table-column>
+        <a-table-column key="tags" title="Tags" data-index="tags">
+          <template slot-scope="tags">
+          <span>
+            <a-tag v-for="tag in tags" :key="tag" color="blue">{{ tag }}</a-tag>
+          </span>
+          </template>
+        </a-table-column>
+      </a-table>
+    </a-card>
+  </div>
 </template>
 <script>
-const columns = [
-  {
-    dataIndex: 'name',
-    key: 'name',
-    slots: { title: 'customTitle' },
-    scopedSlots: { customRender: 'name' },
-  },
-  {
-    title: 'Age',
-    dataIndex: 'age',
-    key: 'age',
-  },
-  {
-    title: 'Address',
-    dataIndex: 'address',
-    key: 'address',
-  },
-  {
-    title: 'Tags',
-    key: 'tags',
-    dataIndex: 'tags',
-    scopedSlots: { customRender: 'tags' },
-  },
-  {
-    title: 'Action',
-    key: 'action',
-    scopedSlots: { customRender: 'action' },
-  },
-];
 
-const data = [
-  {
-    key: '1',
-    name: 'John Brown',
-    age: 32,
-    address: 'New York No. 1 Lake Park',
-    tags: ['nice', 'developer'],
-  },
-  {
-    key: '2',
-    name: 'Jim Green',
-    age: 42,
-    address: 'London No. 1 Lake Park',
-    tags: ['loser'],
-  },
-  {
-    key: '3',
-    name: 'Joe Black',
-    age: 32,
-    address: 'Sidney No. 1 Lake Park',
-    tags: ['cool', 'teacher'],
-  },
-];
+
+
 
 export default {
   data() {
     return {
-      data,
-      columns,
+      data: [],
+      loading: true,
+      rowClick: record => ({
+        on: {
+          click: ()=> {
+            this.$router.push({path: "/contest/", name: "contestDetail", params: {contest: record}})
+          }
+        }
+      })
     };
   },
+  methods: {
+    findByPagination(page, pageSize){
+      this.$api.contest.findContestPagination(page, pageSize).then(res => {
+          if (res.code === 0) {
+            this.data = res.data.records;
+            this.loading = false
+          } else {
+            this.$message.error(res.msg)
+          }
+      })
+    },
+
+  },
+  mounted() {
+    this.findByPagination(1, 10);
+  }
 };
 </script>

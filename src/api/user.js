@@ -24,6 +24,9 @@ const user = {
     },
     getCount(){
         return requestJson("get", "/user/count")
+    },
+    delete(users){
+        return requestJson("post", "/user/deletes", users)
     }
 }
 

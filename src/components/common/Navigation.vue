@@ -8,7 +8,7 @@
       <!-- 导航栏logo end -->
       <!-- 头像 start -->
       <div class="avatar">
-        <Login v-if="!user" :loading="loading" :visible="visible"></Login>
+        <Login v-if="!user" :loading="loading" :registerVisible="registerVisible" :visible="visible"></Login>
         <div class="logined"  v-if="user">
           <a-avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />
           <!-- 用户名 下拉栏 start -->
@@ -86,7 +86,8 @@ export default {
       size: 10,
       visible: false,
       loading: false,
-      user: this.$store.state.user
+      user: this.$store.state.user,
+      registerVisible: false
     }
   },
   methods: {

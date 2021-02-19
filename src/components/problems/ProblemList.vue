@@ -6,7 +6,7 @@
             rowKey="pid"
             :customRow="rowClick"
     >
-      <a-table-column key="pid" title="PID" data-index="pid"/>
+      <a-table-column key="pid" width="2" title="PID" data-index="pid"/>
       <a-table-column key="title" title="Title" data-index="title">
         <template slot-scope="title" >
           <a href="#">{{title}}</a>
@@ -30,15 +30,22 @@
       </a-table-column>
       <a-table-column key="totalSubmit" title="Total" data-index="totalSubmit" />
       <a-table-column key="pass" title="AC" data-index="pass" />
-      <a-table-column title="ACRate" key="acRate" data-index="acRate">
+      <a-table-column>
+        <template slot-scope="record">
+          <WaveChart style="padding-right: 50%" :pid="record.pid" :rate="record.acRate"></WaveChart>
+        </template>
       </a-table-column>
     </a-table>
   </a-card>
 </template>
 <script>
 import { Gauge } from '@antv/g2plot';
-
+import { RingProgress } from '@antv/g2plot';
+import WaveChart from "../common/WaveChart";
 export default {
+  components:{
+    WaveChart,
+  },
   data() {
     return {
       levelColor: ['#87d068','#f50','#108ee9'],
@@ -67,8 +74,11 @@ export default {
   methods: {
     getAllProblemPagination(page, pageSize) {
       this.$api.problem.findProblemPagination(page, pageSize).then(res => {
-        this.problemList = res.data.records
-      })
+        this.problemList = res.data.records;
+        this.problemList.forEach(function (e) {
+           this.drawRatePlot(e.pid, e.acRate)
+        })
+      });
       this.loading = false;
     },
     drawLiquid(data){
@@ -89,6 +99,16 @@ export default {
       this.pagination.pageSize = pagination.pageSize
       this.pagination.current = pagination.page
       this.getAllProblemPagination(pagination.page, pagination.pageSize)
+    },
+    drawRatePlot(id, rate){
+      const ringProgress = new RingProgress(id, {
+        height: 100,
+        width: 100,
+        autoFit: false,
+        percent: rate,
+        color: ['#5B8FF9', '#E8EDF3'],
+      });
+      ringProgress.render();
     }
   },
   filters: {
@@ -103,6 +123,9 @@ export default {
           return ""
         }
     },
+    percentFilter: function (value) {
+        return value*100 + "%";
+    }
   },
   mounted() {
     this.getAllProblemPagination(this.pagination.current, this.pagination.pageSize)

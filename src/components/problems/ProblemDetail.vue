@@ -6,13 +6,16 @@
                     <a-descriptions :title="problem.title" layout="vertical" bordered>
 
                         <a-descriptions-item label="Description" :span="3">
-                           {{problem.description}}
+                            <div v-html="problem.description">
+                            </div>
                         </a-descriptions-item>
                         <a-descriptions-item label="Input" :span="3">
-                            {{problem.inputDescription}}
+                            <div v-html="problem.inputDescription">
+                            </div>
                         </a-descriptions-item>
                         <a-descriptions-item label="Output" :span="3">
-                            {{problem.outputDescription}}
+                            <div v-html="problem.outputDescription">
+                            </div>
                         </a-descriptions-item>
                         <a-descriptions-item label="Samples input1">
                             {{problem.samples.input}}

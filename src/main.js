@@ -11,14 +11,17 @@ import Moment from 'moment'
 import store from '@/store/'
 import mavonEditor from 'mavon-editor'
 import 'mavon-editor/dist/css/index.css'
-
+import NProgress from 'nprogress'
+import 'nprogress/nprogress.css'// nprogress样式文件
 
 import { FormModel } from 'ant-design-vue';
+
 Vue.use(FormModel);
 // 定义全局时间戳过滤器
 Vue.filter('formatDate', function(value) {
   return Moment(value).format('YYYY-MM-DD HH:mm:ss')
 });
+Vue.prototype.$moment = Moment;
 Vue.use(mavonEditor)
 
 Vue.config.productionTip = false;
@@ -34,9 +37,20 @@ const router = new VueRouter({
   mode: 'history',
   routes: routers
 });
-
+//当路由开始跳转时
+router.beforeEach((to, from , next) => {
+  // 开启进度条
+  NProgress.start();
+  // 这个一定要加，没有next()页面不会跳转的。这部分还不清楚的去翻一下官网就明白了
+  next();
+});
+//当路由跳转结束后
+router.afterEach(() => {
+  // 关闭进度条
+  NProgress.done()
+})
 new Vue({
   render: h => h(App),
   router,
-  store
+  store,
 }).$mount('#app')

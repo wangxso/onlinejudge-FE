@@ -16,7 +16,7 @@ export default {
   data(){
     return {
       id: 0,
-      announce: {},
+      announce: [],
       author: {},
       spinning: true,
 
