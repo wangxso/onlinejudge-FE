@@ -1,88 +1,60 @@
 <template>
-  <a-card title="状态">
-    <a-table :loading="loading" :columns="columns" :data-source="submissionList" :pagination="pagination" @change="handleTableChange">
-      <a class="link-text" slot="sid" slot-scope="sid">{{sid}}</a>
-      <span slot="result" slot-scope="result">
-         <a-tag :color="colors[result]">{{resultText[result]}}</a-tag>
-      </span>
-      <a class="link-text" :href="'problems/'+pid" slot="pid" slot-scope="pid">{{pid}}</a>
-      <span slot="timeCost" slot-scope="timeCost">
-        <p v-if="timeCost>=0">{{timeCost}} ms</p>
-        <p v-else>-</p>
-      </span>
-      <span slot="memoryCost" slot-scope="memoryCost">
-        <p v-if="memoryCost>=0">{{Math.ceil(memoryCost/8/1024/1024)}} MB</p>
-        <p v-else>-</p>
-      </span>
-      <span slot="language" slot-scope="language">
-        {{language2Str[language]}}
-      </span>
-      <a class="link-text" slot="user" slot-scope="user">{{user.username}}</a>
-      <template slot="createTime" slot-scope="createTime">
-        {{createTime | formatDate}}
-      </template>
-    </a-table>
-  </a-card>
+  <el-card title="状态">
+    <a-button v-if="cid != null" type="primary" @click="getSubmissionForContest(cid, index, pageSize)">刷新</a-button>
+    <el-table :data="submission" >
+      <el-table-column label="SID">
+        <template slot-scope="scope">
+          <el-link @click="toDetail(scope.row)" v-if="uid === scope.row.user.uid"  type="primary">{{scope.row.sid}}</el-link>
+          <span v-else>{{scope.row.sid}}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="结果">
+        <template slot-scope="scope">
+          <a-tag :color="answer_status[scope.row.result]">
+            {{result_text[scope.row.result]}}
+          </a-tag>
+        </template>
+      </el-table-column>
+      <el-table-column label="题目">
+        <template slot-scope="scope">
+          <el-link type="primary" :href="'/problems/' + scope.row.pid">{{scope.row.pid}}</el-link>
+        </template>
+      </el-table-column>
+      <el-table-column label="语言">
+        <template slot-scope="scope">
+          {{language2Str[scope.row.language]}}
+        </template>
+      </el-table-column>
+      <el-table-column label="耗时(ms)" prop="timeCost">
+      </el-table-column>
+      <el-table-column label="内存">
+        <template slot-scope="scope">
+          {{Math.ceil(scope.row.memoryCost/8/1024)}}&nbsp;MB
+        </template>
+      </el-table-column>
+      <el-table-column label="作者">
+        <template slot-scope="scope">
+          <el-link type="primary">{{scope.row.user.username}}</el-link>
+        </template>
+      </el-table-column>
+      <el-table-column label="提交时间">
+        <template slot-scope="scope">
+          {{scope.row.createTime | formatDate}}
+        </template>
+      </el-table-column>
+    </el-table>
+    <el-pagination
+            style="float: right;padding: 10px;"
+            background
+            @current-change="handlePageChange"
+            :current-page="page"
+            :page-size="pageSize"
+            layout="total, prev, pager, next"
+            :total="total">
+    </el-pagination>
+  </el-card>
 </template>
 <script>
-
-const columns = [
-  {
-    title: 'sid',
-    dataIndex: 'sid',
-    key: 'sid',
-    scopedSlots: {customRender: 'sid'},
-    width: 200
-  },
-  {
-    title: 'Status',
-    dataIndex: 'result',
-    key: 'result',
-    scopedSlots: { customRender: 'result'},
-    width: 200
-  },
-  {
-    title: 'Problem',
-    dataIndex: 'pid',
-    key: 'pid',
-    scopedSlots: {customRender: 'pid'},
-    width: 200
-  },
-  {
-    title: 'Time',
-    key: 'timeCost',
-    dataIndex: 'timeCost',
-    scopedSlots: { customRender: 'timeCost' },
-    width: 200
-  },
-  {
-    title: 'Memory',
-    key: 'memoryCost',
-    dataIndex: 'memoryCost',
-    scopedSlots: { customRender: 'memoryCost' },
-    width: 200
-  },
-  {
-    title: 'Language',
-    key: 'language',
-    dataIndex: 'language',
-    scopedSlots: {customRender: "language"}
-  },
-  {
-    title: 'Author',
-    key: 'user',
-    dataIndex: 'user',
-    scopedSlots: {customRender: 'user'}
-  },
-  {
-    title: 'Submit',
-    key: 'createTime',
-    dataIndex: 'createTime',
-    scopedSlots: {customRender: 'createTime'}
-  }
-
-];
-
 const answer_status = {
   "-1": "blue",
   '1': '#87d068',
@@ -114,56 +86,77 @@ const language2Str = {
   "2": "Java"
 }
 export default {
+  name: "StatusList",
   inject: ['reload'],
+  props: ['cid'],
+  components: {
+  },
   data() {
     return {
-      columns,
-      colors: answer_status,
-      index: 1,
-      pageSize: 10,
-      submissionList: {},
-      resultText: result_text,
-      pagination:{
-        current: 1,
-        pageSize: 10,
-        pageSizeOptions: ['10', '20', '30'],
-        showTotal: (total, range) => {
-          return range[0] + '-' +range[1] + '共' + total + '条';
-        },
-        showQuickJumper: true,
-        showSizeChanger: true,
-        total: 0,
-      },
-      loading: true,
+      submission: {},
+      answer_status,
       language2Str,
+      result_text,
+      total: 0,
+      page: 1,
+      pageSize: 10,
+      uid: ''
     };
   },
   methods: {
     getSubmissions(page , pageSize){
       this.$api.submission.findAllPagination(page, pageSize).then(res => {
             if (res.code === 0) {
-              this.loading = false
-              this.submissionList = res.data.records;
-              this.pagination.total = res.data.total
+              this.total = res.data.total;
+              this.submission = res.data.records
             } else {
-              this.$message.error(res.msg)
+              console.log(res)
             }
       })
     },
     handleTableChange(pagination) {
-      this.pagination.current = pagination.current
-      this.pagination.pageSize = pagination.pageSize
+      this.pagination.current = pagination.current;
+      this.pagination.pageSize = pagination.pageSize;
       this.getSubmissions(pagination.current, pagination.pageSize)
     },
+    getSubmissionForContest(cid, page, pageSize){
+      this.$api.contest.findSubmission(cid, page, pageSize).then(res => {
+          if (res.code === 0) {
+            this.total = res.data.total;
+            this.submission = res.data.records;
+          } else {
+            console.log(res)
+          }
+      })
+    },
+    handlePageChange(val){
+      this.page = val
+      if (this.cid != null) {
+        this.getSubmissionForContest(this.cid, this.page,this.pageSize)
+      } else {
+        this.getSubmissions(this.page, this.pageSize)
+      }
+    },
+    toDetail(status) {
+      this.$router.push({path: "detail", name: "detail", params: {status: status}})
+    }
   },
-  mounted() {
-    this.getSubmissions(this.index, this.pageSize)
+  created() {
+    if (this.$store.state.user){
+        this.uid = this.$store.state.user.uid
+    }
+    if (this.cid != null){
+      this.getSubmissionForContest(this.cid, 1,10)
+    } else {
+      this.getSubmissions(1, 10)
+    }
   }
 };
 </script>
 
-<style scoped>
+<style>
   .link-text{
     color: #3838ee;
   }
+
 </style>

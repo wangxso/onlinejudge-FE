@@ -4,7 +4,6 @@
             <a-col :span="19">
                 <a-card :bordered="false" class="desc-box">
                     <a-descriptions :title="problem.title" layout="vertical" bordered>
-
                         <a-descriptions-item label="Description" :span="3">
                             <div v-html="problem.descriptionHtml">
                             </div>
@@ -74,9 +73,7 @@
                         Level: {{problem.level | levelFilter}}
                     </span>
                 </a-card>
-                <a-card title="题目详情" class="pie">
-                  <ProblemSubPieChart :pid="pid"></ProblemSubPieChart>
-                </a-card>
+
             </a-col>
         </a-row>
     </div>
@@ -96,13 +93,11 @@
     require("codemirror/mode/css/css.js")
     require("codemirror/mode/sql/sql.js")
     require("codemirror/mode/shell/shell.js")
-    import ProblemSubPieChart from "@/components/problems/ProblemSubPieChart";
     export default {
-        name: "ProblemDetail",
-        props:['pid'],
+        name: "ContestProblemDetail",
+        props:['pid', 'cid'],
         components: {
             codemirror,
-            ProblemSubPieChart
         },
         data(){
             return{
@@ -129,10 +124,6 @@
                 this.$api.problem.findProblemByPid(this.pid).then(res => {
                     if (res.code === 0) {
                         this.problem = res.data.problem;
-                        // 题目不可显示
-                        if (!this.problem.visible) {
-                            this.problem = null
-                        }
                         this.problem.user = res.data.user
                         const samples = this.problem.samples;
                         this.problem.samples = JSON.parse(samples)
@@ -145,43 +136,43 @@
                 if (value === 0 || value === 1) this.options.mode = "text/x-c++src"
                 else if (value === 2) this.options.mode = "text/x-java"
             },
-          enterLoading: function () {
-            this.loading = true;
+            enterLoading: function () {
+                this.loading = true;
 
-            const submission = {
-              "code": this.code,
-              "type": this.type,
-              "uid": this.$store.state.user.uid,
-              "pid": this.problem.pid,
-              "language": this.type
-            }
+                const submission = {
+                    "code": this.code,
+                    "type": this.type,
+                    "uid": this.$store.state.user.uid,
+                    "pid": this.problem.pid,
+                    "language": this.type
+                }
 
-            if (this.code === "") {
-              this.$message.error("代码不能为空");
-              this.loading = false;
-              return;
+                if (this.code === "") {
+                    this.$message.error("代码不能为空");
+                    this.loading = false;
+                    return;
+                }
+                this.openNotification('rightBottom')
+                this.$api.contest.submitAnswer(submission, this.cid).then(res => {
+                    if (res.code === 0) {
+                        this.$message.success("提交成功")
+                        this.loading = false;
+                    } else {
+                        this.$message.error(res.msg)
+                        this.loading = false;
+                    }
+                })
+            },
+            openNotification(placement){
+                const message = "已提交，等待判题"
+                this.$notification.open({
+                    key: 'updatable',
+                    message: message,
+                    description: message,
+                    placement,
+                    icon:     <a-icon type="sync" spin />
+            });
             }
-            this.openNotification('rightBottom')
-            this.$api.submission.submitAnswer(submission, this.problem.pid).then(res => {
-                  if (res.code === 0) {
-                    this.$message.success("提交成功")
-                    this.loading = false;
-                  } else {
-                    this.$message.error(res.msg)
-                    this.loading = false;
-                  }
-            })
-          },
-          openNotification(placement){
-              const message = "已提交，等待判题"
-              this.$notification.open({
-                key: 'updatable',
-                message: message,
-                description: message,
-                placement,
-                icon:     <a-icon type="sync" spin />
-              });
-          }
         },
         mounted() {
             this.getProblem();
@@ -210,6 +201,6 @@
         margin-bottom: 20px;
     }
     .pie{
-      margin-top: 50px;
+        margin-top: 50px;
     }
 </style>

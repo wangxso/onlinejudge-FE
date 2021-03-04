@@ -1,13 +1,12 @@
 <template>
-  <StatusList></StatusList>
+  <router-view/>
 </template>
 
 <script>
-import StatusList from "@/components/status/StatusList";
+
 export default {
   name: "status",
   components: {
-    StatusList
   }
 }
 </script>

@@ -31,7 +31,20 @@ const routers = [
             {
                 path: 'status',
                 name: 'status',
-                component: () => import('@/pages/front/status')
+                component: () => import('@/pages/front/status'),
+                children: [
+                    {
+                        path: '',
+                        name: '',
+                        component: () => import('@/components/status/StatusList')
+                    },
+                    {
+                        path: 'detail',
+                        name: 'detail',
+                        component: () => import('@/components/status/StatusDetail'),
+                        props: true
+                    }
+                ]
             },
             {
                 path: 'contest',
@@ -44,11 +57,17 @@ const routers = [
                         component: () => import('@/components/contest/ContestList')
                     },
                     {
-                        path: "/detail",
+                        path: "detail",
                         name: "contestDetail",
                         component: () => import('@/components/contest/ContestDetail'),
                         props: true
-                    }
+                    },
+                    {
+                        path: "problem/:pid/:cid",
+                        name: "ContestProblemDetail",
+                        component: () => import('@/components/contest/common/ContestProblemDetail'),
+                        props: true
+                    },
                 ]
             },
             {
@@ -116,7 +135,38 @@ const routers = [
             {
                 path: "announce",
                 name: "announce",
-                component: () => import('@/pages/backend/announce')
+                component: () => import('@/pages/backend/announce'),
+                children: [
+                    {
+                        path: "",
+                        name: "",
+                        component: () => import("@/components/index/AnnounceManager")
+                    },
+                    {
+                        path: "edit",
+                        name: "AnnounceEdit",
+                        component: () => import("@/components/index/admin/AnnounceEdit"),
+                        props: true
+                    }
+                ]
+            },
+            {
+                path: "contest",
+                name: "contestManager",
+                component: () => import("@/pages/backend/contestManager"),
+                children: [
+                    {
+                        path: "",
+                        name: "",
+                        component: () => import("@/components/contest/ContestManagerList")
+                    },
+                    {
+                        path: "edit",
+                        name: "ContestEdit",
+                        component: () => import("@/components/contest/common/ContestEdit"),
+                        props: true
+                    }
+                ]
             }
         ]
     },

@@ -30,9 +30,9 @@
       </a-table-column>
       <a-table-column key="totalSubmit" title="Total" data-index="totalSubmit" />
       <a-table-column key="pass" title="AC" data-index="pass" />
-      <a-table-column>
+      <a-table-column title="AcRate">
         <template slot-scope="record">
-          <WaveChart style="padding-right: 50%" :pid="record.pid" :rate="record.acRate"></WaveChart>
+          <el-progress width="50" type="dashboard" :percentage="record.acRate" :color="colors"></el-progress>
         </template>
       </a-table-column>
     </a-table>
@@ -41,10 +41,9 @@
 <script>
 import { Gauge } from '@antv/g2plot';
 import { RingProgress } from '@antv/g2plot';
-import WaveChart from "../common/WaveChart";
+
 export default {
   components:{
-    WaveChart,
   },
   data() {
     return {
@@ -68,7 +67,14 @@ export default {
         showQuickJumper: true,
         showSizeChanger: true,
         total: 0,
-      }
+      },
+      colors: [
+        {color: '#f56c6c', percentage: 20},
+        {color: '#e6a23c', percentage: 40},
+        {color: '#5cb87a', percentage: 60},
+        {color: '#1989fa', percentage: 80},
+        {color: '#6f7ad3', percentage: 100}
+      ]
     };
   },
   methods: {

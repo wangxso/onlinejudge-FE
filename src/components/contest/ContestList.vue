@@ -22,7 +22,7 @@
         <a-table-column key="tags" title="Tags" data-index="tags">
           <template slot-scope="tags">
           <span>
-            <a-tag v-for="tag in tags" :key="tag" color="blue">{{ tag }}</a-tag>
+            <a-tag v-for="tag in JSON.parse(tags)" :key="tag" color="blue">{{ tag }}</a-tag>
           </span>
           </template>
         </a-table-column>
@@ -60,7 +60,6 @@ export default {
           }
       })
     },
-
   },
   mounted() {
     this.findByPagination(1, 10);

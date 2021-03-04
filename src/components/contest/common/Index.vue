@@ -34,6 +34,12 @@
                 str = str.replace(/-/g, "/");
                 var date = new Date(str);
                 this.deadline = date
+                let now = new Date();
+                if (now > this.deadline) {
+                    // 返回上一页
+                    this.$router.go(-1)
+                }
+
             }
         },
     }

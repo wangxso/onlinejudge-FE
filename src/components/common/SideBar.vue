@@ -24,10 +24,10 @@
             <a-menu-item key="/admin/announce">
                 <a-icon type="file-text" /><span>公告管理</span>
             </a-menu-item>
-            <a-menu-item key="/admin/judger">
-                <a-icon type="cloud" /><span>判题机管理</span>
-            </a-menu-item>
-            <a-menu-item key="/admin/content">
+<!--            <a-menu-item key="/admin/judger">-->
+<!--                <a-icon type="cloud" /><span>判题机管理</span>-->
+<!--            </a-menu-item>-->
+            <a-menu-item key="/admin/contest">
                 <a-icon type="bulb" /><span>比赛管理</span>
             </a-menu-item>
             <a-menu-item key="/admin/website">

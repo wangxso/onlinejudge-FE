@@ -1,58 +1,51 @@
 <template>
-  <a-carousel arrows>
-    <div
-        slot="prevArrow"
-        slot-scope=""
-        class="custom-slick-arrow"
-        style="left: 10px;zIndex: 1"
-    >
-      <a-icon type="left-circle" />
-    </div>
-    <div slot="nextArrow" slot-scope="" class="custom-slick-arrow" style="right: 10px">
-      <a-icon type="right-circle" />
-    </div>
-    <div><h3>1</h3></div>
-    <div><h3>2</h3></div>
-    <div><h3>3</h3></div>
-    <div><h3>4</h3></div>
-  </a-carousel>
+  <el-carousel :interval="4000" type="card" height="200px">
+    <el-carousel-item v-for="(item,index) in imgs" :key="index">
+      <a href="#">
+        <el-image
+                :src="item"
+                :fit="fit">
+
+        </el-image>
+      </a>
+    </el-carousel-item>
+  </el-carousel>
 </template>
+
 <script>
-export default {
-  name: 'Carousel',
-  data (){
-    return {
+  export default {
+    name: "Carousel",
+    methods: {
 
+    },
+    data(){
+      return{
+        imgs: [
+                'https://wxoj.oss-cn-hangzhou.aliyuncs.com/20210224115706.png',
+                'https://wxoj.oss-cn-hangzhou.aliyuncs.com/20210224120007.png',
+                'https://wxoj.oss-cn-hangzhou.aliyuncs.com/20210224115706.png',
+        ],
+        fit: "scale-down"
+      }
     }
+
   }
-};
 </script>
-<style scoped>
-/* For demo */
-.ant-carousel >>> .slick-slide {
-  text-align: center;
-  height: 160px;
-  line-height: 160px;
-  background: #364d79;
-  overflow: hidden;
-}
 
-.ant-carousel >>> .custom-slick-arrow {
-  width: 25px;
-  height: 25px;
-  font-size: 25px;
-  color: #fff;
-  background-color: rgba(31, 45, 61, 0.11);
-  opacity: 0.3;
-}
-.ant-carousel >>> .custom-slick-arrow:before {
-  display: none;
-}
-.ant-carousel >>> .custom-slick-arrow:hover {
-  opacity: 0.5;
-}
+<style>
+  .el-carousel__item h3 {
+    color: #475669;
+    font-size: 14px;
+    opacity: 0.75;
+    line-height: 200px;
+    margin: 0;
+  }
 
-.ant-carousel >>> .slick-slide h3 {
-  color: #fff;
-}
+  .el-carousel__item:nth-child(2n) {
+    background-color: #99a9bf;
+  }
+
+  .el-carousel__item:nth-child(2n+1) {
+    background-color: #d3dce6;
+  }
 </style>

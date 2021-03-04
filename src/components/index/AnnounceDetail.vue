@@ -19,7 +19,7 @@
     </a-page-header>
 
     <a-card>
-      <p>{{announce.content}}</p>
+      <div v-html="announce.contentHtml"></div>
     </a-card>
   </div>
 </template>

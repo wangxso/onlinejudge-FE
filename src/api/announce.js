@@ -8,6 +8,15 @@ const announce = {
     },
     findAnnouncePagination(page, pageSize) {
         return requestJson('get', `/announce/${page}/${pageSize}`)
+    },
+    update(announce){
+        return requestJson("put", "/announce/", announce)
+    },
+    add(announce){
+        return requestJson("post", "/announce/", announce)
+    },
+    deleteAnnounce(aid){
+        return requestJson("delete", `/announce/${aid}`)
     }
 }
 

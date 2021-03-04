@@ -21,7 +21,8 @@
                 <a-menu-item @click="toLink('personal')">
                   个人中心
                 </a-menu-item>
-                <a-menu-item @click="toLink('admin')">
+                <!-- 判断权限 -->
+                <a-menu-item v-if="user.authority == 1" @click="toLink('/admin')">
                   后台管理
                 </a-menu-item>
                 <a-menu-item @click="logout" key="3">

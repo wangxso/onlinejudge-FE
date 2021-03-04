@@ -10,6 +10,9 @@ const problem = {
     findProblemPagination(page, pageSize){
         return requestJson("get", `/problem/${page}/${pageSize}`)
     },
+    findProblemPaginationAdmin(page, pageSize){
+        return requestJson("get", `/problem/admin/${page}/${pageSize}`)
+    },
     update(problem) {
         return requestJson("put", "/problem", problem)
     },

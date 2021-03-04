@@ -4,8 +4,8 @@
             <a-row>
                 <a-col :span="1"></a-col>
                 <a-col :span="22">
-                    <a-card title="公告管理" class="user-list">
-                        <router-view />
+                    <a-card title="比赛管理">
+                        <router-view></router-view>
                     </a-card>
                 </a-col>
                 <a-col :span="1"></a-col>
@@ -16,13 +16,11 @@
 
 <script>
     export default {
-        name: "announce",
+        name: "contentManager",
         data() {
             return {
                 height: `${document.documentElement.clientHeight}`,
             }
-        },
-        components: {
         }
     }
 </script>

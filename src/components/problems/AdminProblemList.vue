@@ -1,6 +1,6 @@
 <template>
     <div>
-        <a-button size="small" type="primary" @click="() => (this.$router.push('problem/edit?mode=2'))">
+        <a-button size="small" type="primary" @click="() => (this.$router.push({path:'problem/edit',params: {problem: {}}, query: {'mode': 2}}))">
             添加题目
         </a-button>
         <a-table
@@ -15,9 +15,14 @@
               </a-tag>
             </template>
             <template slot="operation" slot-scope="text, record">
-            <div class="editable-row-operations">
-                <a  @click="() => toEdit(record)">Edit</a>
-            </div>
+                <div class="editable-row-operations">
+                    <a  @click="() => toEdit(record)">Edit {{text}}</a>
+                </div>
+            </template>
+            <template slot="visible" slot-scope="visible, record">
+                <div>
+                    <a-switch :checked="visible" @change="onchange(checked, record)"></a-switch>
+                </div>
             </template>
         </a-table>
     </div>
@@ -44,6 +49,11 @@
             title: 'operation',
             dataIndex: 'operation',
             scopedSlots: { customRender: 'operation' },
+        },
+        {
+            title: 'visible',
+            dataIndex: 'visible',
+            scopedSlots: { customRender: 'visible' },
         }
     ];
     export default {
@@ -74,7 +84,7 @@
             },
             findProblemPagination(page, pageSize) {
                 this.loading = true;
-                this.$api.problem.findProblemPagination(page, pageSize).then(res => {
+                this.$api.problem.findProblemPaginationAdmin(page, pageSize).then(res => {
                     if (res.code === 0) {
                         this.problemList = res.data.records
                         this.pagination.total = res.data.total
@@ -85,7 +95,17 @@
                 })
             },
             toEdit(record){
-                this.$router.push({path: "problem/edit", name: "edit", params: record, query: {"mode": 1}})
+                this.$router.push({path: "problem/edit", name: "edit", params: {problem: record}, query: {"mode": 1}})
+            },
+            onchange(checked, record){
+                record.visible = !record.visible
+                this.$api.problem.update(record).then(res => {
+                    if (res.code === 0) {
+                        this.$message.success("修改成功")
+                    } else {
+                        this.$message.error(res.msg)
+                    }
+                })
             }
         },
         mounted() {

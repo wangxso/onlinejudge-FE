@@ -1,133 +1,32 @@
 <template>
-    <a-modal :footer="null" v-model="registerVisible" title="注册" on-ok="handleOk">
-    <a-form :form="form" @submit="handleSubmit">
-        <a-form-item v-bind="formItemLayout" label="用户名">
-            <a-input
-                    v-decorator="[
-          'username',
-          {
-            rules: [
-              {
-                required: true,
-                message: 'Please input your E-mail!',
-              },
-            ],
-          },
-        ]"
-            />
-        </a-form-item>
-        <a-form-item v-bind="formItemLayout" label="邮箱">
-            <a-input
-                    v-decorator="[
-          'email',
-          {
-            rules: [
-              {
-                type: 'email',
-                message: 'The input is not valid E-mail!',
-              },
-              {
-                required: true,
-                message: 'Please input your E-mail!',
-              },
-            ],
-          },
-        ]"
-            />
-        </a-form-item>
-        <a-form-item v-bind="formItemLayout" label="密码" has-feedback>
-            <a-input
-                    v-decorator="[
-          'password',
-          {
-            rules: [
-              {
-                required: true,
-                message: 'Please input your password!',
-              },
-              {
-                validator: validateToNextPassword,
-              },
-            ],
-          },
-        ]"
-                    type="password"
-            />
-        </a-form-item>
-        <a-form-item v-bind="formItemLayout" label="确认密码" has-feedback>
-            <a-input
-                    v-decorator="[
-          'confirm',
-          {
-            rules: [
-              {
-                required: true,
-                message: 'Please confirm your password!',
-              },
-              {
-                validator: compareToFirstPassword,
-              },
-            ],
-          },
-        ]"
-                    type="password"
-                    @blur="handleConfirmBlur"
-            />
-        </a-form-item>
-        <a-form-item v-bind="formItemLayout" label="手机号">
-            <a-input
-                    v-decorator="[
-          'tel',
-          {
-            rules: [{ required: true, message: 'Please input your phone number!' }],
-          },
-        ]"
-                    style="width: 100%"
-            >
-                <a-select
-                        slot="addonBefore"
-                        v-decorator="['prefix', { initialValue: '86' }]"
-                        style="width: 70px"
-                >
-                    <a-select-option value="86">
-                        +86
-                    </a-select-option>
-                </a-select>
-            </a-input>
-        </a-form-item>
-        <a-form-item
-                v-bind="formItemLayout"
-                label="验证码"
-                extra="We must make sure that your are a human."
-        >
-            <a-row :gutter="8">
-                <a-col :span="12">
-                    <a-input
-                            v-decorator="[
-              'captcha',
-              { rules: [{ required: true, message: 'Please input the captcha you got!' }] },
-            ]"
-                    />
-                </a-col>
-                <a-col :span="12">
-                    <a-button>获取验证码</a-button>
-                </a-col>
-            </a-row>
-        </a-form-item>
-        <a-form-item v-bind="tailFormItemLayout">
-            <a-checkbox v-decorator="['agreement', { valuePropName: 'checked' }]">
-                I have read the
-                <a href="">
-                    agreement
-                </a>
-            </a-checkbox>
-        </a-form-item>
-        <a-form-item v-bind="tailFormItemLayout">
-            <a-button type="primary" html-type="submit">
-                Register
-            </a-button>
-        </a-form-item>
-    </a-form>
+    <a-modal  :footer="null" v-model="registerVisible" title="注册" on-ok="handleOk">
+        <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
+            <el-form-item label="用户名" prop="username">
+                <el-input v-model="ruleForm.username"></el-input>
+            </el-form-item>
+            <el-form-item label="密码" prop="password">
+                <el-input type="password" v-model="ruleForm.password" autocomplete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="确认密码" prop="checkPass">
+                <el-input type="password" v-model="ruleForm.checkPass" autocomplete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="邮箱" prop="email">
+                <el-input type="email" v-model="ruleForm.email" auto-complete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="手机号" prop="tel">
+                <el-row>
+                    <el-col :span="13"><el-input  v-model="ruleForm.tel" auto-complete="off"></el-input></el-col>
+                    <el-col :span="11"><el-button @click="getSmsCode('ruleForm')">获取验证码</el-button></el-col>
+                </el-row>
+            </el-form-item>
+            <el-form-item label="验证码" prop="code">
+                <el-input  v-model="ruleForm.code" auto-complete="off"></el-input>
+            </el-form-item>
+            <el-form-item>
+                <el-button type="primary" @click="submitForm('ruleForm')">立即创建</el-button>
+                <el-button @click="resetForm('ruleForm')">重置</el-button>
+            </el-form-item>
+        </el-form>
     </a-modal>
 </template>
 
@@ -135,72 +34,100 @@
     export default {
         props: ['registerVisible'],
         data() {
+            var validatePass = (rule, value, callback) => {
+                if (value === '') {
+                    callback(new Error('请再次输入密码'));
+                } else if (value !== this.ruleForm.password) {
+                    callback(new Error('两次输入密码不一致!'));
+                } else {
+                    callback();
+                }
+            };
+            const validatePhone = (rule, value, callback) => {
+                if (value === "") {
+                    callback(new Error("请输入手机号"));
+                } else {
+                    if (!/^1[3456789]\d{9}$/.test(value)) {
+                        callback(new Error("请输入正确的手机号"));
+                    } else {
+                        callback();
+                    }
+                }
+            };
             return {
-                confirmDirty: false,
-                autoCompleteResult: [],
-                formItemLayout: {
-                    labelCol: {
-                        xs: { span: 24 },
-                        sm: { span: 8 },
-                    },
-                    wrapperCol: {
-                        xs: { span: 24 },
-                        sm: { span: 16 },
-                    },
+                ruleForm: {
+                    username: '',
+                    password: '',
+                    checkPass: '',
+                    email: '',
+                    tel: '',
+                    code: '',
+                    resource: '',
+                    desc: ''
                 },
-                tailFormItemLayout: {
-                    wrapperCol: {
-                        xs: {
-                            span: 24,
-                            offset: 0,
-                        },
-                        sm: {
-                            span: 16,
-                            offset: 8,
-                        },
-                    },
+                rules: {
+                    username: [
+                        { required: true, message: '请输入用户名', trigger: 'blur' },
+                    ],
+                    password: [
+                        { required: true, message: '请输入密码', trigger: 'blur' },
+                        { min: 8, max: 20, message: '长度在 8 到 20 个字符', trigger: 'blur'}
+                    ],
+                    checkPass: [
+                        { required: true, message: '请确认密码', trigger: 'blur' },
+                        { validator: validatePass, trigger: 'blur'}
+                    ],
+                    email: [
+                        { type: 'email', required: true, message: '请输入正确的邮箱', trigger: 'blur' }
+                    ],
+                    tel: [
+                        { required: true, message: '请输入手机号', trigger: 'blur' },
+                        { validator: validatePhone, trigger: 'blur'}
+                    ],
+                    code: [
+                        { required: true, message: '请输入验证码', trigger: 'blur' }
+                    ],
+                    desc: [
+                        { required: true, message: '请填写活动形式', trigger: 'blur' }
+                    ]
                 },
+
             };
         },
-        beforeCreate() {
-            this.form = this.$form.createForm(this, { name: 'register' });
-        },
         methods: {
-            handleSubmit(e) {
-                e.preventDefault();
-                this.form.validateFieldsAndScroll((err, values) => {
-                    if (!err) {
-                        this.$api.user.register(values).then(res => {
-                            if (res.code === 0){
+            submitForm(formName) {
+                this.$refs[formName].validate((valid) => {
+                    if (valid) {
+                        this.$api.user.register(this.ruleForm).then(res => {
+                            if (res.code === 0) {
+                                this.$message.success("注册成功");
                                 this.registerVisible = false;
-                                this.$message.success("注册成功")
                             } else {
                                 this.$message.error(res.msg)
                             }
                         })
-                        console.log('Received values of form: ', values);
+                    } else {
+                        console.log('error submit!!');
+                        return false;
                     }
                 });
             },
-            handleConfirmBlur(e) {
-                const value = e.target.value;
-                this.confirmDirty = this.confirmDirty || !!value;
+            resetForm(formName) {
+                this.$refs[formName].resetFields();
             },
-            compareToFirstPassword(rule, value, callback) {
-                const form = this.form;
-                if (value && value !== form.getFieldValue('password')) {
-                    callback('Two passwords that you enter is inconsistent!');
-                } else {
-                    callback();
-                }
-            },
-            validateToNextPassword(rule, value, callback) {
-                const form = this.form;
-                if (value && this.confirmDirty) {
-                    form.validateFields(['confirm'], { force: true });
-                }
-                callback();
-            },
+            getSmsCode(formName){
+                this.$refs[formName].validateField(['tel'], errorMessage => {
+                    if (!errorMessage) {
+                        this.$api.sms.getSmsCode(this.ruleForm.tel).then(res => {
+                            if (res.code === 0) {
+                                this.$message.success(res.data)
+                            } else {
+                                this.$message.error(res.msg)
+                            }
+                        })
+                    }
+                })
+            }
         },
     };
 </script>

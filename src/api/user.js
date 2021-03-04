@@ -5,16 +5,19 @@ const user = {
         return requestJson("post", "/user/register", user)
     },
     login(user, code){
-        return requestJson("post", `/user/login?code=${code}`, user)
+        return requestJson("post", `/login?code=${code}`, user)
     },
     findUserById(uid){
         return  requestJson("post", "/user/findUserById", {"uid": uid})
     },
+    findUserByUsername(username){
+        return requestJson("get", `/user/${username}`)
+    },
     getVerityCode(){
-        return requestJson("get", "/code/")
+        return requestJson("get", "/code")
     },
     logout(user){
-        return requestJson("post","/user/logout", user)
+        return requestJson("post","/logout", user)
     },
     getUserPagination(page, pageSize) {
         return requestJson("get", `/user/${page}/${pageSize}`)

@@ -51,7 +51,7 @@
         </a-modal>
 
         <!--注册-->
-            <Register :registerVisible="registerVisible"></Register>
+        <Register :registerVisible="registerVisible"></Register>
     </div>
 </template>
 <script>
@@ -85,7 +85,8 @@
                     { required: true, message: '验证码不能为空', trigger: 'blur'}
                 ]
             },
-            img: baseURL+"/code/",
+            img: baseURL+"code/",
+
         };
     },
     methods: {
@@ -102,11 +103,12 @@
                     this.$api.user.login(this.form, this.form.code).then(res => {
                         if (res.code === 0) {
                             this.visible = false;
-                            console.log(res.data)
                             this.$store.commit(RECORD_TOKEN, res.data.token);
-                            this.$store.commit(RECORD_USER, res.data.user);
-                            this.reload();
-                            this.$message.success(`欢迎您! `+res.data.user.username);
+                            this.$api.user.findUserByUsername(this.form.username).then(res => {
+                                this.$store.commit(RECORD_USER, res.data);
+                                this.reload();
+                                this.$message.success(`欢迎您! `+res.data.username);
+                            });
                         } else {
                             this.form = {username: '', password: '', code: ''};
                             this.getVerityCode();

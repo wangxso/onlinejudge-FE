@@ -9,15 +9,15 @@
             </a-form-model-item>
             <a-form-model-item label="题目描述">
                 <div id="main">
-                    <mavon-editor @change="changeDesc" v-model="problem.description"/>
+                    <mavon-editor @change="changeDesc" v-model="problem.descriptionMd"/>
                 </div>
             </a-form-model-item >
             <a-form-model-item label="输入描述">
-                <mavon-editor @change="changeInput" v-model="problem.inputDescription" />
+                <mavon-editor @change="changeInput" v-model="problem.inputDescriptionMd" />
             </a-form-model-item>
 
             <a-form-model-item label="输出描述">
-                <mavon-editor @change="changeOutput"/>
+                <mavon-editor @change="changeOutput" v-model="problem.outputDescriptionMd"/>
             </a-form-model-item>
 
             <a-form-model-item label="样例描述">
@@ -53,7 +53,7 @@
                 <a-input  suffix="KB" v-model="problem.memoryLimit" />
             </a-form-model-item>
             <a-form-model-item label="提示">
-                <mavon-editor @change="changeHint"/>
+                <mavon-editor @change="changeHint" v-model="problem.hintMd"/>
             </a-form-model-item>
             <a-form-model-item label="标签">
                 <template v-for="tag in tags">
@@ -82,6 +82,9 @@
             <a-form-model-item label="输出数据">
                 <a-textarea v-model="testcase.output" :rows="6"/>
             </a-form-model-item>
+            <a-form-item label="是否可见">
+                <a-switch :checked="problem.visible" @change="OnChange"></a-switch>
+            </a-form-item>
             <a-form-model-item :wrapper-col="{ span: 14, offset: 4 }">
                 <a-button type="primary" @click="onSubmit">
                     提交
@@ -97,22 +100,9 @@
 <script>
     export default {
         name: "AdminProblemEdit",
+        props: ['problem'],
         data() {
             return{
-                problem: {
-                  pid: "",
-                  title: "",
-                  description: "",
-                  inputDescription: "",
-                  outputDescription: "",
-                  samples: "",
-                  languages: ["0"],
-                  level: 0,
-                  timeLimit: "",
-                  memoryLimit: "",
-                  hint: "",
-                  uid: this.$store.state.user.uid
-                },
                 labelCol: { span: 4 },
                 wrapperCol: { span: 14 },
                 form: {
@@ -123,7 +113,6 @@
                     type: [],
                     resource: '',
                     desc: '',
-
                 },
                 testcase: {
                   id: "",
@@ -135,19 +124,37 @@
                   input: "",
                   output: ""
                 },
-                tags: ['null'],
+                tags: [],
                 inputVisible: false,
                 inputValue: '',
+                problem_sample:{
+                    pid: "",
+                    title: "",
+                    descriptionHtml: "",
+                    descriptionMd: "",
+                    hintHtml: "",
+                    hintMd: "",
+                    inputDescriptionHtml: "",
+                    inputDescriptionMd: "",
+                    languages: ["0"],
+                    level: 0,
+                    memoryLimit: "",
+                    outputDescriptionHtml: "",
+                    outputDescriptionMd:"",
+                    samples: {},
+                    tags: [],
+                    timeLimit: 1000,
+                    visible: false
+                }
             }
         },
         methods: {
             onSubmit() {
-                if (this.mode === 1){
+                if (this.mode == 1){
                     this.update()
-                } else if (this.mode === 2) {
+                } else if (this.mode == 2) {
                     this.add()
                 }
-
             },
             update() {
                 const languages = this.problem.languages;
@@ -165,8 +172,10 @@
             },
             add() {
                 const languages = this.problem.languages;
+                this.problem.samples = JSON.stringify(this.samples)
                 this.problem.languages = JSON.stringify(languages)
                 this.problem.tags = JSON.stringify(this.tags)
+                this.problem.uid = this.$store.state.user.uid
                 this.$api.problem.add(this.problem).then(res => {
                     if (res.code === 0) {
                         this.testcase.id = this.problem.pid
@@ -223,29 +232,30 @@
                 });
             },
             changeHint(value, render){
-                this.problem.hint = render
+                this.problem.hintHtml = render
             },
             changeInput(value, render){
-                this.problem.inputDescription = render
+                this.problem.inputDescriptionHtml = render
             },
             changeOutput(value, render){
-                this.problem.outputDescription = render
+                this.problem.outputDescriptionHtml = render
             },
             changeDesc(value, render){
-                this.problem.description = render
+                this.problem.descriptionHtml = render
+            },
+            OnChange(){
+                this.problem.visible = !this.problem.visible;
             }
 
         },
         mounted() {
-            this.mode = this.$route.query.mode
-            if (this.mode == 2) {
-                this.mode = 2
+            this.mode = this.$route.query.mode;
+            if (this.mode == 1) {
+                this.samples = JSON.parse(this.problem.samples);
+                this.tags = JSON.parse(this.problem.tags);
+                this.findTestcase(this.problem.pid);
             } else {
-              this.problem = this.$attrs
-              this.samples = JSON.parse(this.problem.samples)
-              this.tags = JSON.parse(this.problem.tags)
-              this.findTestcase(this.problem.pid);
-              this.mode = 1
+                this.problem = this.problem_sample
             }
         }
     }

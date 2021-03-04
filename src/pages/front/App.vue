@@ -7,9 +7,6 @@
     <a-layout-content class="main" style="padding: 10px 50px; height: 100%">
       <router-view/>
     </a-layout-content>
-    <a-layout-footer style="text-align: center">
-      OnlineJudge ©2020 Created by wangx
-    </a-layout-footer>
   </a-layout>
 </div>
 </template>

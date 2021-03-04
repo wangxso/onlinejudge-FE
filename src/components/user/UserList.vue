@@ -148,7 +148,6 @@
 </template>
 <script>
     const columns = [
-
         {
             title: 'username',
             dataIndex: 'username',
