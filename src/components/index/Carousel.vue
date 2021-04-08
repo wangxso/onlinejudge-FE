@@ -1,34 +1,69 @@
 <template>
-  <el-carousel :interval="4000" type="card" height="200px">
-    <el-carousel-item v-for="(item,index) in imgs" :key="index">
-      <a href="#">
-        <el-image
-                :src="item"
-                :fit="fit">
-
-        </el-image>
-      </a>
-    </el-carousel-item>
-  </el-carousel>
+  <div id="liner" style="padding: 20px"></div>
 </template>
 
 <script>
+  import {DualAxes} from "@antv/g2plot";
+
   export default {
     name: "Carousel",
     methods: {
+      getStatisticSubmission(){
+        this.$api.submission.getSubmissionStatics().then(res => {
+          if (res.code === 0) {
+            for (let item of res.data) {
+              item.time = this.$moment(item.time).format("YYYY-MM-DD HH:mm:ss")
+            }
+            this.staticsSubmission = res.data;
+            this.drawLine()
+          } else  {
+            this.$message.error(res.msg)
+          }
+        })
 
+      },
+      drawLine() {
+        const data = this.staticsSubmission;
+        const dualAxes = new DualAxes('liner', {
+          data: [data, data],
+          xField: 'time',
+          yField: ['count', 'count'],
+          geometryOptions: [
+            {
+              geometry: 'column',
+              columnWidthRatio: 0.4,
+              label: {
+                position: 'middle',
+              },
+            },
+            {
+              geometry: 'line',
+              smooth: true,
+              lineStyle: {
+                lineWidth: 2,
+              },
+            },
+          ],
+          animation: {
+            // 配置图表第一次加载时的入场动画
+            appear: {
+              animation: 'wave-in', // 动画效果
+              duration: 5000,  // 动画执行时间
+            },
+          }
+        });
+
+        dualAxes.render();
+      }
     },
     data(){
       return{
-        imgs: [
-                'https://wxoj.oss-cn-hangzhou.aliyuncs.com/20210224115706.png',
-                'https://wxoj.oss-cn-hangzhou.aliyuncs.com/20210224120007.png',
-                'https://wxoj.oss-cn-hangzhou.aliyuncs.com/20210224115706.png',
-        ],
-        fit: "scale-down"
+        staticsSubmission: []
       }
+    },
+    mounted() {
+      this.getStatisticSubmission()
     }
-
   }
 </script>
 

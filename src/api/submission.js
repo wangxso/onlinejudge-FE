@@ -9,6 +9,9 @@ const submission = {
     },
     getCount(){
         return requestJson("get", "/submission/count")
+    },
+    getSubmissionStatics() {
+        return requestJson("get", "/submission/statics")
     }
 }
 

@@ -9,7 +9,7 @@ hljs.registerLanguage('java', java)
 hljs.registerLanguage('python', python)
 
 export default {
-    install (Vue, options) {
+    install (Vue) {
         Vue.directive('highlight', {
             deep: true,
             bind: function (el, binding) {

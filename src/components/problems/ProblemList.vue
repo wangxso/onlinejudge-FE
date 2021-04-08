@@ -11,10 +11,19 @@
         <template slot-scope="title" >
           <a href="#">{{title}}</a>
         </template>
-
       </a-table-column>
 
-      <a-table-column key="level" title="Level" data-index="level" >
+      <a-table-column
+          key="level"
+          title="Level"
+          data-index="level"
+
+          :filters="[
+      { text: 'Easy', value: 0 },
+      { text: 'Mid', value: 1 },
+      { text: 'Hard', value: 2 }]"
+          :onFilter="levelFilterTable"
+      >
         <template slot-scope="level">
           <a-tag :color="levelColor[level]">
             {{level | levelFilter}}
@@ -48,6 +57,7 @@ export default {
   data() {
     return {
       levelColor: ['#87d068','#f50','#108ee9'],
+      filteredInfo: null,
       rowClick: record => ({
         on: {
           click: ()=> {
@@ -78,6 +88,9 @@ export default {
     };
   },
   methods: {
+    handleChange(pagination, filters) {
+      this.filteredInfo = filters;
+    },
     getAllProblemPagination(page, pageSize) {
       this.$api.problem.findProblemPagination(page, pageSize).then(res => {
         this.problemList = res.data.records;
@@ -115,6 +128,9 @@ export default {
         color: ['#5B8FF9', '#E8EDF3'],
       });
       ringProgress.render();
+    },
+    levelFilterTable(value,record){
+       return record.name.includes(value);
     }
   },
   filters: {

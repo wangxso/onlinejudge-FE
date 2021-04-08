@@ -1,84 +1,86 @@
 <template>
   <div>
-    <a-card title="用户信息">
-      <a-row>
-        <a-col :span="3">
-          <a-avatar :size="128" icon="user" />
-        </a-col>
-        <a-col :span="16">
-          <a-descriptions>>
-            <a-descriptions-item label="UserName">
-              {{ user.username }}
-            </a-descriptions-item>
-            <a-descriptions-item label="Telephone">
-              {{user.tel}}
-            </a-descriptions-item>
-            <a-descriptions-item label="Level">
-              {{user.level}}
-            </a-descriptions-item>
-            <a-descriptions-item label="email">
-              {{user.email}}
-            </a-descriptions-item>
-          </a-descriptions>
-        </a-col>
-      </a-row>
-      <div id="container"></div>
-
-    </a-card>
+    <el-card>
+      <el-tabs tab-position="left" :stretch="true">
+        <el-tab-pane label="基本信息">
+            <a-col :span="11">
+              <UserInfo :user="user"></UserInfo>
+            </a-col>
+            <a-col :span="1"></a-col>
+            <a-col :span="11">
+              <label for="container">用户通过统计图</label>
+              <div id="container"></div>
+            </a-col>
+        </el-tab-pane>
+        <el-tab-pane label="头像管理">
+          <Avatar :user="user"></Avatar>
+        </el-tab-pane>
+        <el-tab-pane label="角色管理"></el-tab-pane>
+        <el-tab-pane label="定时任务补偿"></el-tab-pane>
+      </el-tabs>
+    </el-card>
   </div>
 </template>
 
 <script>
-import { Line } from '@antv/g2plot';
-const data = [
-  { year: '1991', value: 3 },
-  { year: '1992', value: 4 },
-  { year: '1993', value: 3.5 },
-  { year: '1994', value: 5 },
-  { year: '1995', value: 4.9 },
-  { year: '1996', value: 6 },
-  { year: '1997', value: 7 },
-  { year: '1998', value: 9 },
-  { year: '1999', value: 13 },
-];
-
+import {Pie} from "@antv/g2plot";
+import UserInfo from "@/components/personal/components/UserInfo";
+import Avatar from "@/components/personal/components/Avatar";
 export default {
-name: "PersonalInfo",
+  name: "PersonalInfo",
+  components: {
+    UserInfo,
+    Avatar
+  },
   data() {
-  return{
-    user: this.$store.state.user
-  }
+    return{
+      user: this.$store.state.user,
+      passAndTotal: []
+    }
+  },
+  methods: {
+    findUserSubmissionPassAndTotal(uid) {
+        this.$api.user.findUserSubmissionPassAndTotal(uid).then(res => {
+            if (res.code === 0) {
+              this.passAndTotal = res.data;
+              this.draw()
+            } else {
+              this.$message.error(res.msg);
+            }
+        })
+    },
+    draw() {
+      const data = [
+        {type: '通过数', value: this.passAndTotal['pass']},
+        {type: '未通过数', value: this.passAndTotal['total'] - this.passAndTotal['pass']},
+      ];
+      console.log(data)
+      const piePlot = new Pie('container', {
+        data,
+        angleField: 'value',
+        colorField: 'type',
+        radius: 0.8,
+        height: 180,
+        width: 180,
+        autoFit: true,
+        label: {
+          type: 'outer',
+          content: '{name} {percentage}',
+        },
+        interactions: [{type: 'pie-legend-active'}, {type: 'element-active'}],
+        color: ({ type }) => {
+          if(type === '通过数'){
+            return '#67C23A';
+          }
+          return '#F56C6C';
+        }
+      });
+
+      piePlot.render();
+    }
   },
   mounted() {
-    const line = new Line('container', {
-      data,
-      xField: 'year',
-      yField: 'value',
-      label: {},
-      point: {
-        size: 5,
-        shape: 'diamond',
-        style: {
-          fill: 'white',
-          stroke: '#5B8FF9',
-          lineWidth: 2,
-        },
-      },
-      tooltip: { showMarkers: false },
-      state: {
-        active: {
-          style: {
-            shadowBlur: 4,
-            stroke: '#000',
-            fill: 'red',
-          },
-        },
-      },
-      interactions: [{ type: 'marker-active' }],
-    });
-
-    line.render();
-
+    this.findUserSubmissionPassAndTotal(this.user.uid)
   }
 }
 </script>

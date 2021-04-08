@@ -6,6 +6,7 @@ import testcase from "./testcase";
 import contest from "./contest";
 import rank from "./rank";
 import sms from "./sms";
+import carousel from "@/api/carousel";
 export default {
     announce,
     user,
@@ -15,4 +16,5 @@ export default {
     contest,
     rank,
     sms,
+    carousel,
 }

@@ -15,18 +15,24 @@
                     </template>
                 </el-table-column>
                 <el-table-column
-                        property="username"
                         label="用户名"
                 >
+                  <template slot-scope="record">
+                    <el-link type="primary">{{record.row.username}}</el-link>
+                  </template>
                 </el-table-column>
                 <el-table-column
                         property="pass"
                         label="AC"
                 >
                 </el-table-column>
+              <el-table-column
+                  property="total"
+                  label="提交">
+              </el-table-column>
                 <el-table-column
-                        property="total"
-                        label="total">
+                        property="level"
+                        label="分数">
                 </el-table-column>
                 <el-table-column
                     label="AcRate"

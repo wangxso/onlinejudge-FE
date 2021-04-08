@@ -1,6 +1,6 @@
 <template>
     <div>
-        <a-button type="primary">添加</a-button>
+        <a-button @click="toEdit" type="primary">添加</a-button>
         <a-table
                 :data-source="data"
                 rowKey="cid"

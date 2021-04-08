@@ -8,7 +8,11 @@
           <span v-else>{{scope.row.sid}}</span>
         </template>
       </el-table-column>
-      <el-table-column label="结果">
+      <el-table-column
+          label="结果"
+          :filters="result_text_filter"
+          :filter-method="filterHandler"
+      >
         <template slot-scope="scope">
           <a-tag :color="answer_status[scope.row.result]">
             {{result_text[scope.row.result]}}
@@ -34,11 +38,14 @@
       </el-table-column>
       <el-table-column label="作者">
         <template slot-scope="scope">
-          <el-link type="primary">{{scope.row.user.username}}</el-link>
+          <el-tag size="medium">
+            <el-link type="primary">{{scope.row.user.username}}</el-link>
+          </el-tag>
         </template>
       </el-table-column>
       <el-table-column label="提交时间">
         <template slot-scope="scope">
+          <i class="el-icon-time"></i>
           {{scope.row.createTime | formatDate}}
         </template>
       </el-table-column>
@@ -80,6 +87,19 @@ const result_text = {
   "8": "System Error",
   "9": "Compile Error",
 };
+
+const result_text_filter = [
+  {'text': 'Pending', "value": -1},
+  {'text': 'Accepted', "value": 1},
+  {'text': 'Wrong Answer', "value": 2},
+  {'text': 'Runtime Error', "value": 3},
+  {'text': 'Output Limit Exceeded', "value": 4},
+  {'text': 'Memory Limit Exceeded', "value": 5},
+  {'text': 'Time Limit Exceeded', "value": 6},
+  {'text': 'Presentation Error', "value": 7},
+  {'text': 'System Error', "value": 8},
+  {'text': 'Compile Error', "value": 9},
+];
 const language2Str = {
   "0": "C",
   "1": "C++",
@@ -97,6 +117,7 @@ export default {
       answer_status,
       language2Str,
       result_text,
+      result_text_filter,
       total: 0,
       page: 1,
       pageSize: 10,
@@ -139,6 +160,9 @@ export default {
     },
     toDetail(status) {
       this.$router.push({path: "detail", name: "detail", params: {status: status}})
+    },
+    filterHandler(value, row) {
+      return row['result'] === value;
     }
   },
   created() {

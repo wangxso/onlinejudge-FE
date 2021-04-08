@@ -30,9 +30,9 @@
             <a-menu-item key="/admin/contest">
                 <a-icon type="bulb" /><span>比赛管理</span>
             </a-menu-item>
-            <a-menu-item key="/admin/website">
-                <a-icon type="info-circle" /><span>网站信息管理</span>
-            </a-menu-item>
+<!--            <a-menu-item key="/admin/website">-->
+<!--                <a-icon type="info-circle" /><span>网站信息管理</span>-->
+<!--            </a-menu-item>-->
             <a-menu-item key="/">
               <a-icon type="arrow-left" /><span>返回首页</span>
             </a-menu-item>

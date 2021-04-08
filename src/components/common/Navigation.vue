@@ -10,7 +10,7 @@
       <div class="avatar">
         <Login v-if="!user" :loading="loading" :registerVisible="registerVisible" :visible="visible"></Login>
         <div class="logined"  v-if="user">
-          <a-avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />
+          <a-avatar style="margin-right: 10px" :src="user.avatar" />
           <!-- 用户名 下拉栏 start -->
           <a-space :size="size">
             <a-dropdown placement="bottomCenter" >

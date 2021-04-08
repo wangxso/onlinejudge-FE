@@ -38,6 +38,7 @@
                 if (now > this.deadline) {
                     // 返回上一页
                     this.$router.go(-1)
+                    this.$message.error("比赛已结束")
                 }
 
             }

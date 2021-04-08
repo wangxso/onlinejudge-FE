@@ -30,6 +30,9 @@ const user = {
     },
     delete(users){
         return requestJson("post", "/user/deletes", users)
+    },
+    findUserSubmissionPassAndTotal(uid) {
+        return requestJson("get", `/user/statics/submission/${uid}`)
     }
 }
 
