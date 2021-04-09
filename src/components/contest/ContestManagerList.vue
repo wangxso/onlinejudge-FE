@@ -1,6 +1,6 @@
 <template>
     <div>
-        <a-button @click="toEdit" type="primary">添加</a-button>
+        <a-button @click="toAdd" type="primary">添加</a-button>
         <a-table
                 :data-source="data"
                 rowKey="cid"
@@ -67,8 +67,11 @@
                 alert(record.cid)
             },
             toEdit(record){
-                this.$router.push({path: "/admin/contest/edit", name: "ContestEdit", params: {record:record}})
+                this.$router.push({path: "/admin/contest/edit", name: "ContestEdit", params: {record:record, mode: '1'}})
             },
+            toAdd() {
+                this.$router.push({path: "/admin/contest/edit", name: "ContestEdit", params: {mode: '0', record:{}}})
+            }
         },
         mounted() {
             this.findByPagination(1, 10);

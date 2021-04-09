@@ -12,6 +12,9 @@ const contest = {
     },
     updateContest(contest) {
         return requestJson("put", "/contest", contest)
+    },
+    addContest(contest) {
+        return requestJson("post", "/contest", contest)
     }
 }
 
