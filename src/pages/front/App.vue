@@ -45,8 +45,7 @@ export default {
       }
       this.queueReceiveSetting.websocket.onmessage = res => {
         let data = res.data
-        this.$message.info(data)
-        this.openNotification('bottomRight', res.data)
+        this.openNotification('bottomRight', data)
       }
       this.queueReceiveSetting.websocket.onclose = res => {
         console.log('连接关闭' + res)

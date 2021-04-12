@@ -12,10 +12,7 @@
                     <template slot-scope="title" >
                         <a href="#">{{title}}</a>
                     </template>
-
                 </a-table-column>
-                <a-table-column key="totalSubmit" title="Total" data-index="totalSubmit" />
-                <a-table-column key="pass" title="AC" data-index="pass" />
             </a-table>
         </a-card>
     </div>
