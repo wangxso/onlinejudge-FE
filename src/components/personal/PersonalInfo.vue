@@ -13,7 +13,7 @@
             </a-col>
         </el-tab-pane>
         <el-tab-pane label="头像管理">
-          <Avatar :user="user"></Avatar>
+          <Avatar style="margin-left: 40%" :user="user"></Avatar>
         </el-tab-pane>
         <el-tab-pane label="角色管理"></el-tab-pane>
         <el-tab-pane label="定时任务补偿"></el-tab-pane>

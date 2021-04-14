@@ -1,32 +1,23 @@
 <template>
   <div>
-    <a-avatar :size="64" :src="user.avatar" />
-    <a-upload
-        name="avatar"
-        list-type="picture-card"
+    <el-upload
+        style="margin: 1%"
         class="avatar-uploader"
-        :show-upload-list="false"
-        action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-        :before-upload="beforeUpload"
-        @change="handleChange"
+        :action="uploadUrl"
+        :show-file-list="false"
+        :on-success="handleAvatarSuccess"
+        :before-upload="beforeAvatarUpload"
     >
-      <img v-if="imageUrl" :src="imageUrl" alt="avatar" />
-      <div v-else>
-        <a-icon :type="loading ? 'loading' : 'plus'" />
-        <div class="ant-upload-text">
-          Upload
-        </div>
-      </div>
-    </a-upload>
+      <img v-if="imageUrl" :src="imageUrl" class="avatar">
+      <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+    </el-upload>
+    <el-button type="primary" style="margin: 6%" @click="updateAvatar">确定修改</el-button>
   </div>
 </template>
 
 <script>
-function getBase64(img, callback) {
-  const reader = new FileReader();
-  reader.addEventListener('load', () => callback(reader.result));
-  reader.readAsDataURL(img);
-}
+import baseURL from "@/service/base-url";
+import {RECORD_USER} from "@/store/mutation-types";
 export default {
   name: "Avatar",
   props: ['user'],
@@ -34,37 +25,64 @@ export default {
     return {
       loading: false,
       imageUrl: '',
+      uploadUrl: baseURL + 'user/avatar'
     };
   },
   methods: {
-    handleChange(info) {
-      if (info.file.status === 'uploading') {
-        this.loading = true;
-        return;
-      }
-      if (info.file.status === 'done') {
-        // Get this url from response in real world.
-        getBase64(info.file.originFileObj, imageUrl => {
-          this.imageUrl = imageUrl;
-          this.loading = false;
-        });
-      }
+    handleAvatarSuccess(res) {
+      this.imageUrl = res.data;
     },
-    beforeUpload(file) {
-      const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
-      if (!isJpgOrPng) {
-        this.$message.error('You can only upload JPG file!');
-      }
+    beforeAvatarUpload(file) {
+      const isJPG = file.type === 'image/jpeg';
       const isLt2M = file.size / 1024 / 1024 < 2;
-      if (!isLt2M) {
-        this.$message.error('Image must smaller than 2MB!');
+      if (!isJPG) {
+        this.$message.error('上传头像图片只能是 JPG 格式!');
       }
-      return isJpgOrPng && isLt2M;
+      if (!isLt2M) {
+        this.$message.error('上传头像图片大小不能超过 2MB!');
+      }
+      return isJPG && isLt2M;
+    },
+    updateAvatar() {
+      let tempUrl = this.user.avatar;
+      this.user.avatar = this.imageUrl;
+      this.$api.user.updateUser(this.user).then(res => {
+          if (res.code === 0) {
+            this.$store.commit(RECORD_USER, this.user);
+              this.$message.success(res.data)
+          } else {
+            this.user.avatar = tempUrl;
+            this.$message.error("serve error");
+          }
+      })
+
     },
   }
 }
 </script>
 
-<style scoped>
-
+<style>
+.avatar-uploader .el-upload {
+  border: 1px dashed #d9d9d9;
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+.avatar-uploader .el-upload:hover {
+  border-color: #409EFF;
+}
+.avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 178px;
+  height: 178px;
+  line-height: 178px;
+  text-align: center;
+}
+.avatar {
+  width: 178px;
+  height: 178px;
+  display: block;
+}
 </style>
