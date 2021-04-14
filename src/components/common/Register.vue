@@ -1,38 +1,43 @@
 <template>
-    <a-modal  :footer="null" v-model="registerVisible" title="注册" on-ok="handleOk">
+    <div class="inline">
+      <a-button type="primary" style="margin-right: 20px" @click="showRegister">
+        Register
+      </a-button>
+      <a-modal  :footer="null" destroyOnClose="true" @cancel="onClose"  v-model="registerVisible" title="注册" on-ok="handleOk">
         <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
-            <el-form-item label="用户名" prop="username">
-                <el-input v-model="ruleForm.username"></el-input>
-            </el-form-item>
-            <el-form-item label="密码" prop="password">
-                <el-input type="password" v-model="ruleForm.password" autocomplete="off"></el-input>
-            </el-form-item>
-            <el-form-item label="确认密码" prop="checkPass">
-                <el-input type="password" v-model="ruleForm.checkPass" autocomplete="off"></el-input>
-            </el-form-item>
-            <el-form-item label="邮箱" prop="email">
-                <el-input type="email" v-model="ruleForm.email" auto-complete="off"></el-input>
-            </el-form-item>
-            <el-form-item label="手机号" prop="tel">
-                <el-row>
-                    <el-col :span="13"><el-input  v-model="ruleForm.tel" auto-complete="off"></el-input></el-col>
-                    <el-col :span="11"><el-button @click="getSmsCode('ruleForm')">获取验证码</el-button></el-col>
-                </el-row>
-            </el-form-item>
-            <el-form-item label="验证码" prop="code">
-                <el-input  v-model="ruleForm.code" auto-complete="off"></el-input>
-            </el-form-item>
-            <el-form-item>
-                <el-button type="primary" @click="submitForm('ruleForm')">立即创建</el-button>
-                <el-button @click="resetForm('ruleForm')">重置</el-button>
-            </el-form-item>
+          <el-form-item label="用户名" prop="username">
+            <el-input v-model="ruleForm.username"></el-input>
+          </el-form-item>
+          <el-form-item label="密码" prop="password">
+            <el-input type="password" v-model="ruleForm.password" autocomplete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="确认密码" prop="checkPass">
+            <el-input type="password" v-model="ruleForm.checkPass" autocomplete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="邮箱" prop="email">
+            <el-input type="email" v-model="ruleForm.email" auto-complete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="手机号" prop="tel">
+            <el-row>
+              <el-col :span="13"><el-input  v-model="ruleForm.tel" auto-complete="off"></el-input></el-col>
+              <el-col :span="11"><el-button @click="getSmsCode('ruleForm')">获取验证码</el-button></el-col>
+            </el-row>
+          </el-form-item>
+          <el-form-item label="验证码" prop="code">
+            <el-input  v-model="ruleForm.code" auto-complete="off"></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="submitForm('ruleForm')">立即创建</el-button>
+            <el-button @click="resetForm('ruleForm')">重置</el-button>
+          </el-form-item>
         </el-form>
-    </a-modal>
+      </a-modal>
+    </div>
+
 </template>
 
 <script>
     export default {
-        props: ['registerVisible'],
         data() {
             var validatePass = (rule, value, callback) => {
                 if (value === '') {
@@ -55,7 +60,8 @@
                 }
             };
             return {
-                ruleForm: {
+              registerVisible: false,
+              ruleForm: {
                     username: '',
                     password: '',
                     checkPass: '',
@@ -95,6 +101,9 @@
             };
         },
         methods: {
+            showRegister(){
+              this.registerVisible = true;
+            },
             submitForm(formName) {
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
@@ -127,7 +136,16 @@
                         })
                     }
                 })
-            }
+            },
+            onClose() {
+                this.registerVisible = false;
+            },
         },
     };
 </script>
+
+<style>
+.inline {
+  display: inline-block;
+}
+</style>

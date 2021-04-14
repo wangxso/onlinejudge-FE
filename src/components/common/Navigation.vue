@@ -8,7 +8,8 @@
       <!-- 导航栏logo end -->
       <!-- 头像 start -->
       <div class="avatar">
-        <Login v-if="!user" :loading="loading" :registerVisible="registerVisible" :visible="visible"></Login>
+        <Login v-if="!user"></Login>
+        <Register v-if="!user"></Register>
         <div class="logined"  v-if="user">
           <a-avatar style="margin-right: 10px" :src="user.avatar" />
           <!-- 用户名 下拉栏 start -->
@@ -18,7 +19,7 @@
                 {{user.username}} <a-icon type="down" />
               </a>
               <a-menu slot="overlay" @click="onClick">
-                <a-menu-item @click="toLink('personal')">
+                <a-menu-item @click="toLink('/personal')">
                   个人中心
                 </a-menu-item>
                 <!-- 判断权限 -->
@@ -74,21 +75,20 @@
 
 <script>
 import Login from "@/components/common/Login";
+import Register from "@/components/common/Register";
 import {RECORD_USER, RECORD_TOKEN} from "@/store/mutation-types";
 
 export default {
   inject:['reload'],
   components: {
-    Login
+    Login,
+    Register
   },
   data() {
     return {
       theme: 'light',
       size: 10,
-      visible: false,
-      loading: false,
       user: this.$store.state.user,
-      registerVisible: false
     }
   },
   methods: {

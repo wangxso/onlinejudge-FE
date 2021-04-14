@@ -146,6 +146,15 @@
                 else if (value === 2) this.options.mode = "text/x-java"
             },
           enterLoading: function () {
+            if (this.code === "") {
+              this.$message.error("代码不能为空");
+              this.loading = false;
+              return;
+            } else if (this.$store.state.user === null) {
+              this.$message.error("用户未登录");
+              return;
+            }
+
             this.loading = true;
 
             const submission = {
@@ -156,11 +165,7 @@
               "language": this.type
             }
 
-            if (this.code === "") {
-              this.$message.error("代码不能为空");
-              this.loading = false;
-              return;
-            }
+
             this.openNotification('rightBottom')
             this.$api.submission.submitAnswer(submission, this.problem.pid).then(res => {
                   if (res.code === 0) {

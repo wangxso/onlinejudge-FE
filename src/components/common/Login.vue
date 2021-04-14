@@ -1,13 +1,9 @@
 <template>
-    <div>
-        <a-button  type="primary" style="margin-right: 20px;" @click="showModal">
+    <div class="inline">
+        <a-button  type="primary" style="margin-right: 20px;" @click="showLogin">
             Login
         </a-button>
-        <a-button type="primary" style="margin-right: 20px" @click="showRegister">
-            Register
-        </a-button>
-
-        <a-modal v-model="visible" title="登录" on-ok="handleOk">
+        <a-modal v-model="loginVisible" title="登录" on-ok="handleOk">
             <template slot="footer">
                 <a-button type="primary" @click="handleOk">
                     登录
@@ -49,21 +45,14 @@
                 忘记密码
             </a-button>
         </a-modal>
-
-        <!--注册-->
-        <Register :registerVisible="registerVisible"></Register>
     </div>
 </template>
 <script>
     import {RECORD_USER, RECORD_TOKEN} from "@/store/mutation-types";
     import baseURL from "../../service/base-url";
-    import Register from "./Register";
     export default {
     inject:['reload'],
-    props: ['loading', 'visible', 'registerVisible'],
-    components: {
-      Register
-    },
+    props: ['loading'],
     data() {
         return {
             labelCol: { span: 4 },
@@ -86,12 +75,12 @@
                 ]
             },
             img: baseURL+"code/",
-
+            loginVisible: false,
         };
     },
     methods: {
-        showModal() {
-            this.visible = true;
+        showLogin() {
+            this.loginVisible = true;
         },
         showRegister(){
             this.registerVisible = true;
@@ -102,7 +91,7 @@
                 if (valid) {
                     this.$api.user.login(this.form, this.form.code).then(res => {
                         if (res.code === 0) {
-                            this.visible = false;
+                            this.loginVisible = false;
                             this.$store.commit(RECORD_TOKEN, res.data.token);
                             this.$api.user.findUserByUsername(this.form.username).then(res => {
                                 this.$store.commit(RECORD_USER, res.data);
@@ -122,7 +111,7 @@
             });
         },
         handleCancel() {
-            this.visible = false;
+            this.loginVisible = false;
         },
         getVerityCode() {
             this.img = this.img + "?num=" + Math.random()
@@ -133,3 +122,9 @@
     }
 };
 </script>
+
+<style>
+  .inline {
+    display: inline-block;
+  }
+</style>
