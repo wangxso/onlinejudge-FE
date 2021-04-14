@@ -3,7 +3,7 @@ let baseURL
 if (process.env.NODE_ENV === 'development') {
     baseURL = 'http://localhost:8081/';
 } else if (process.env.NODE_ENV === 'production') {
-    baseURL = 'http://localhost:8081/'
+    baseURL = 'http://oj.api.wangx.wang/'
 }
 
 export default baseURL
