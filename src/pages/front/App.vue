@@ -14,6 +14,7 @@
 <script>
 import Navigation from "@/components/common/Navigation";
 import $ from 'jquery'
+import baseWS from "@/service/base-ws";
 export default {
   inject: ['result_text'],
   name: "App",
@@ -25,7 +26,7 @@ export default {
       queueReceiveSetting: { // 消息队列配置
         websocket: null,
         client: null,
-        wsuri: 'ws://localhost:8081/ws/'+this.$store.state.user.uid
+        wsuri: baseWS+this.$store.state.user.uid
       }
     }
   },
